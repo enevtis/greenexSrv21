@@ -1,0 +1,2 @@
+/usr/nvs/greenex/restartSrv2service.sh &
+
