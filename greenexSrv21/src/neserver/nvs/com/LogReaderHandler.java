@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.net.ssl.SSLSocket;
 
+import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
 import obj.greenexSrv2.nvs.com.TblField;
 
@@ -28,6 +29,16 @@ public class LogReaderHandler extends HandlerTemplate {
 		out += strTopPanel("Last " + lines + " lines of log:");
 		String fileName = gData.mainPath + File.separator + "log" + File.separator + "logger.trc";
 
+		int userRight = Utils.determineUserRights(gData, this.getClass().getSimpleName(), gData.commonParams.get("currentUser"));
+		if (userRight < 1) {
+
+			out += "Sorry, you don't have necessary authorisation! Недостаточно полномочий.";
+			out += getEndPage();
+
+			return out;
+		}
+		
+		
 		out += getLastNLogLines(new File(fileName), lines);
 
 		out += getEndPage();

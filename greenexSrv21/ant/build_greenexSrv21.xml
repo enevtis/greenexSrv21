@@ -8,7 +8,7 @@ http://ant.apache.org/manual/tutorial-HelloWorldWithAnt.html
         <property name="version"            value="2.1"/>
         <property name="main.class.name"    value="greenexSrv2.nvs.com.GreenexSrv2Main"/> 
  
-        <property name="dev.home.dir"       value="C:\dev\greenex2\"/>
+        <property name="dev.home.dir"       value="C:\Users\evgen\git\repository3\"/>
  
  
         <property name="ant.project.name"   value="greenexSrv21"/> 
