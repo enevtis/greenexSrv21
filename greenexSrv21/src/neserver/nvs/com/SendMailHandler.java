@@ -4,9 +4,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
-//import javax.mail.*;
-//import javax.mail.internet.InternetAddress;
-//import javax.mail.internet.MimeMessage;
 
 
 import greenexSrv2.nvs.com.MSEcxchange;

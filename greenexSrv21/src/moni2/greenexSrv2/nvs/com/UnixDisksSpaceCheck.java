@@ -46,9 +46,9 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 		for (remoteSystem s : servers) {
 
 			
-			  gData.logger.info("*** <p class='check_db_runnig'>Running " +
-			  s.params.get("ip") + " " + s.params.get("hostname") + " " +
-			  s.params.get("os_type") + " " + params.get("job_name") + "</p>");
+//			  gData.logger.info("*** <p class='check_db_runnig'>Running " +
+//			  s.params.get("ip") + " " + s.params.get("hostname") + " " +
+//			  s.params.get("os_type") + " " + params.get("job_name") + "</p>");
 			  
 			  ObjectParametersReader parReader = new ObjectParametersReader(gData);
 			  PhisObjProperties pr = parReader.getParametersPhysObject(s.params.get("guid"));	
@@ -128,7 +128,7 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 			 
 		}
 
-		gData.logger.info("*** <p style='color:blue;'>End " + params.get("job_name") + "</p>");
+//		gData.logger.info("*** <p style='color:blue;'>End " + params.get("job_name") + "</p>");
 		gData.sqlReq.saveResult(
 				"update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
 						+ params.get("job_id"));

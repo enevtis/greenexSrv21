@@ -118,7 +118,7 @@ public class GreenexSrv2Main {
 		
 		srv.gData.executor.scheduleAtFixedRate(new SelfCheck(srv.gData), 5, 60, TimeUnit.SECONDS);
 		
-		srv.gData.service.scheduleAtFixedRate(new HouseKeepingJob(srv.gData), 60, 120, TimeUnit.MINUTES);
+		srv.gData.service.scheduleAtFixedRate(new HouseKeepingJob(srv.gData), 1, 5, TimeUnit.MINUTES);
 		
 		srv.gData.logger.info("All services Greenex monitor srarted...");
 

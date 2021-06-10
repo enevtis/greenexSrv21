@@ -38,9 +38,34 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 		checkNewAlerts();
 		checkStatusOldAlerts();
 		sendLetters();
+		resetStuckStarts();
 
 	}
 
+	protected void resetStuckStarts() {
+		
+		String SQL = readFrom_sql_text(this.getClass().getSimpleName(),"reset_stuck_starts");
+		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
+		List<String> updSql = new ArrayList<>();
+		
+		for (Map<String, String> rec : records) {
+			
+			String action = (rec.get("action") == null) ? "" : rec.get("action");
+			
+			if (action.equals("alert")) {
+			
+				updSql.add("update monitor_schedule set running = ' ', "
+						+ "running_errors = running_errors+1  where id=" + rec.get("id"));
+				gData.logger.info(rec.get("job_name") + " has been reseted after running " + rec.get("past_min"));
+				
+			}
+		}
+		
+		gData.sqlReq.saveResult(updSql);
+		
+	}
+	
+	
 	protected void sendLetters() {
 		String SQL = readFrom_sql_text(this.getClass().getSimpleName(),"process_alerts");
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
@@ -191,7 +216,6 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
 		
-		if (gData.debugMode) gData.saveToLog("analyze_monitor_results <br>" + SQL ,this.getClass().getSimpleName(),true);
 
 		
 		

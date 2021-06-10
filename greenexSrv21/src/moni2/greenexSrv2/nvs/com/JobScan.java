@@ -37,6 +37,7 @@ public class JobScan implements Runnable {
 
 		String SQL = "";
 		String packageName = "moni2.greenexSrv2.nvs.com.";
+		List<String> sqlUpd = new ArrayList<>();
 
 		SQL += "SELECT a.id, a.number, a.job_name, a.className, a.parameters, TIMESTAMPDIFF(MINUTE, a.last_analyze, NOW()) AS past_min, \n";
 		SQL += "CASE WHEN TIMESTAMPDIFF(MINUTE, a.last_analyze, NOW()) > a.interval_min THEN 'start' ELSE 'pause' END AS 'action' \n";
@@ -68,10 +69,16 @@ public class JobScan implements Runnable {
 							Object obj = cnstr.newInstance(gData, params);
 
 							
+							
 							Thread tr = new Thread((Runnable) obj);
 							tr.start();
+							
+							sqlUpd.add("update monitor_schedule set last_start = now() where id=" + rec.get("id"));
 						
 						}
+	
+					
+					
 					} catch (Exception e) {
 
 						StringWriter errors = new StringWriter();
@@ -80,6 +87,10 @@ public class JobScan implements Runnable {
 					}
 
 				}
+	
+			gData.sqlReq.saveResult(sqlUpd);
+			
+			
 			}
 		}
 
