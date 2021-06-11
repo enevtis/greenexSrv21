@@ -94,13 +94,13 @@ public class GreenexSrv2Main {
 		
 		if (srv.gData.commonParams.containsKey("systemScanning")) {
 			
-			if (srv.gData.commonParams.get("systemScanning").equals("true")) {
+			if (srv.gData.commonParams.get("systemScanning").contains("true")) {
 				
 				srv.gData.executor.scheduleAtFixedRate(new JobScan(srv.gData), 0,1, TimeUnit.MINUTES);
 				srv.gData.logger.info("systemScanning started...");
 
 			} else {
-				srv.gData.logger.info("systemScanning is disallowed...");
+				srv.gData.logger.info("WARNING: systemScanning is disallowed...");
 			}
 		
 		}

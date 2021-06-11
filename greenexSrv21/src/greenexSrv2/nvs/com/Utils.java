@@ -64,7 +64,7 @@ public class Utils {
 			List<Map<String, String>> records = gData.sqlReq.getSelect(SQL1);
 
 			for (Map<String, String> rec : records) {
-				gData.logger.info(rec.get("result"));
+//				gData.logger.info(rec.get("result"));
 				result = Float.valueOf(rec.get("result"));
 			}
 

@@ -21,7 +21,6 @@ public class JobScan implements Runnable {
 	public void run() {
 
 		try {
-
 			scanJobs();
 
 		} catch (Exception e) {
@@ -46,7 +45,6 @@ public class JobScan implements Runnable {
 
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
-		
 		if (records_list != null) {
 			if (records_list.size() > 0) {
 
@@ -61,24 +59,20 @@ public class JobScan implements Runnable {
 						params.put("job_id", rec.get("id"));
 
 						if (rec.get("action").equals("start")) {
-							
+
 							String className = packageName + rec.get("className");
 							Class cl = Class.forName(className);
 							Constructor cnstr = Class.forName(className)
-								.getConstructor(greenexSrv2.nvs.com.globalData.class, Map.class);
+									.getConstructor(greenexSrv2.nvs.com.globalData.class, Map.class);
 							Object obj = cnstr.newInstance(gData, params);
 
-							
-							
 							Thread tr = new Thread((Runnable) obj);
 							tr.start();
-							
+
 							sqlUpd.add("update monitor_schedule set last_start = now() where id=" + rec.get("id"));
-						
+
 						}
-	
-					
-					
+
 					} catch (Exception e) {
 
 						StringWriter errors = new StringWriter();
@@ -87,10 +81,9 @@ public class JobScan implements Runnable {
 					}
 
 				}
-	
-			gData.sqlReq.saveResult(sqlUpd);
-			
-			
+
+				gData.sqlReq.saveResult(sqlUpd);
+
 			}
 		}
 

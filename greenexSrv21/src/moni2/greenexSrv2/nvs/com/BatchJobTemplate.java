@@ -26,33 +26,33 @@ public class BatchJobTemplate {
 	public String SQL_for_list = "";
 	Map<String, String> params;
 
-	public BatchJobTemplate(globalData gData,Map<String, String> params) {
+	public BatchJobTemplate(globalData gData, Map<String, String> params) {
 		this.gData = gData;
 		this.params = params;
 	}
 
-	
 	protected Map<String, String> parceFilter(String line) {
 		Map<String, String> out = new HashMap<String, String>();
 		String[] lines = line.split(";");
-		
-		for (String l: lines) {
+
+		for (String l : lines) {
 			String[] parts = l.split("=");
 			out.put(parts[0], parts[1]);
 		}
 		return out;
 	}
+
 	protected String read_from_sql_remote_check(String className, String job_name, String filter) {
 		String out = "";
 		String SQL = "";
-		
+
 		SQL += "SELECT * FROM sql_remote_check WHERE class='" + className + "'";
-		SQL += " and job_name='" + job_name + "'";		
-		if(!filter.isEmpty()) {
-			SQL+= " and filter='" +filter + "'";
+		SQL += " and job_name='" + job_name + "'";
+		if (!filter.isEmpty()) {
+			SQL += " and filter='" + filter + "'";
 		}
 		SQL += " order by id";
-		
+
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
 		if (records_list != null) {
@@ -69,20 +69,16 @@ public class BatchJobTemplate {
 		return out;
 	}
 
-	protected String getValue(String inputString,String tagName) {
+	protected String getValue(String inputString, String tagName) {
 		String out = "";
-		Pattern TAG_REGEX = Pattern.compile("<"+tagName+">(.+?)</"+tagName+">", Pattern.DOTALL);
+		Pattern TAG_REGEX = Pattern.compile("<" + tagName + ">(.+?)</" + tagName + ">", Pattern.DOTALL);
 		Matcher matcher = TAG_REGEX.matcher(inputString);
-	    while (matcher.find()) {
-	        out = matcher.group(1);
-	    }
+		while (matcher.find()) {
+			out = matcher.group(1);
+		}
 		return out;
 	}
 
-	
-	
-	
-	
 	protected ConnectionData readConnectionParameters(PhisObjProperties pr) {
 		ConnectionData out = new ConnectionData();
 		String SQL = "select * from monitor_conn_data where object_guid='" + pr.physGuid + "'";
@@ -122,12 +118,11 @@ public class BatchJobTemplate {
 
 		return out;
 	}
-	
-	
+
 	protected ConnectionData readConnectionParameters(String idRecord, PhisObjProperties pr) {
 		ConnectionData out = new ConnectionData();
 		String SQL = "select * from monitor_conn_data where id=" + idRecord;
-		
+
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 		if (records_list != null) {
 			if (records_list.size() > 0) {
@@ -164,7 +159,6 @@ public class BatchJobTemplate {
 		return out;
 	}
 
-
 	protected List<remoteSystem> readDB_systemsListForCheck() {
 
 		List<remoteSystem> out = new ArrayList<remoteSystem>();
@@ -174,14 +168,14 @@ public class BatchJobTemplate {
 		SQL += "JOIN monitor_links b ON a.guid=b.object_guid \n";
 		SQL += "WHERE b.monitor_number = '" + params.get("job_number") + "' \n";
 		SQL += "AND b.active = 'X' \n";
-		
-		if (params.get("parameters")!=null) {
+
+		if (params.get("parameters") != null) {
 			String list = getValue(params.get("parameters"), "list");
-				if (!list.isEmpty()) {
-						SQL += " and " + list;
-					}
+			if (!list.isEmpty()) {
+				SQL += " and " + list;
+			}
 		}
-		
+
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
 		if (records_list != null) {
@@ -189,7 +183,7 @@ public class BatchJobTemplate {
 
 				for (Map<String, String> rec : records_list) {
 
-					remoteSystem s= new remoteSystem();
+					remoteSystem s = new remoteSystem();
 					s.params.put("guid", rec.get("guid"));
 					s.params.put("ip", rec.get("def_ip"));
 					s.params.put("port", rec.get("port"));
@@ -198,15 +192,14 @@ public class BatchJobTemplate {
 					s.params.put("db_type", rec.get("db_type"));
 
 					out.add(s);
-					
+
 				}
 			}
 		}
-		
-		
 
 		return out;
 	}
+
 	protected boolean doSshRequest(remoteSystem s, ConnectionData conData, String remoteSshText) {
 		boolean out = false;
 
@@ -228,6 +221,7 @@ public class BatchJobTemplate {
 
 		return out;
 	}
+
 	public String getSsh(String ip, String user, String password, String strCommand) throws Exception {
 
 		String out = "";
@@ -275,6 +269,7 @@ public class BatchJobTemplate {
 		return out;
 
 	}
+
 	protected List<remoteSystem> readServersListForCheck(String job_number) {
 
 		List<remoteSystem> out = new ArrayList<remoteSystem>();
@@ -284,7 +279,7 @@ public class BatchJobTemplate {
 		SQL += "JOIN monitor_links b ON a.guid=b.object_guid  \n";
 		SQL += "WHERE b.monitor_number = '" + job_number + "' \n";
 		SQL += "AND b.active = 'X' \n";
-		
+
 		if (params.get("parameters") != null) {
 			String list = getValue(params.get("parameters"), "list");
 			if (!list.isEmpty()) {
@@ -313,6 +308,7 @@ public class BatchJobTemplate {
 
 		return out;
 	}
+
 	protected boolean checkIfAlertAlreadyExists(String object_guid, String monitor_number, String details) {
 		boolean out = false;
 
@@ -363,16 +359,16 @@ public class BatchJobTemplate {
 
 		return out;
 	}
+
 	protected List<String> readRecepientsByProjects(List<String> object_guids) {
 		List<String> out = new ArrayList<String>();
 		String SQL = "";
 
-	
-		SQL +="SELECT s1.* \n" ;
-		SQL +="FROM (SELECT DISTINCT CONCAT(object_guid,'-',monitor_number) AS guid_key,email FROM recepients ) AS s1 \n" ;
-		SQL +="WHERE ";
-		SQL +=" s1.guid_key LIKE 'all%' \n" ;
-		SQL +="OR s1.guid_key IN (";
+		SQL += "SELECT s1.* \n";
+		SQL += "FROM (SELECT DISTINCT CONCAT(object_guid,'-',monitor_number) AS guid_key,email FROM recepients ) AS s1 \n";
+		SQL += "WHERE ";
+		SQL += " s1.guid_key LIKE 'all%' \n";
+		SQL += "OR s1.guid_key IN (";
 		for (String s : object_guids) {
 			SQL += "'" + s + "',";
 		}
@@ -392,19 +388,48 @@ public class BatchJobTemplate {
 
 		return out;
 	}
+
 	protected List<String> readAdminRecepients() {
 		List<String> out = new ArrayList();
 		String SQL = "";
 
-		SQL ="SELECT * FROM recepients WHERE project_guid = 'all'";
+		SQL = "SELECT * FROM recepients WHERE project_guid = 'all'";
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
-				for (Map<String, String> rec : records_list) {
-					out.add(rec.get("email"));
-				}
+		for (Map<String, String> rec : records_list) {
+			out.add(rec.get("email"));
+		}
 
-		
-		return out;		
+		return out;
 	}
 
+	protected List<remoteSystem> readABAP_systemsListForCheck() {
+
+		List<remoteSystem> out = new ArrayList<remoteSystem>();
+		String SQL = "";
+
+		SQL += "SELECT a.*,b.* FROM app_systems a \n";
+		SQL += "JOIN monitor_links b ON a.guid=b.object_guid \n";
+		SQL += "WHERE b.monitor_number = '" + params.get("job_number") + "' \n";
+		SQL += "AND b.active = 'X' \n";
+
+		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
+
+		for (Map<String, String> rec : records_list) {
+
+			remoteSystem s = new remoteSystem();
+			s.params.put("guid", rec.get("guid"));
+			s.params.put("ip", rec.get("def_ip"));
+			s.params.put("port", rec.get("port"));
+			s.params.put("sid", rec.get("sid"));
+			s.params.put("sysnr", rec.get("sysnr"));
+			s.params.put("app_typ", rec.get("app_typ"));
+			s.params.put("sap_scheme", rec.get("sap_scheme"));
+			s.params.put("short", rec.get("short"));
+			out.add(s);
+
+		}
+
+		return out;
+	}
 }

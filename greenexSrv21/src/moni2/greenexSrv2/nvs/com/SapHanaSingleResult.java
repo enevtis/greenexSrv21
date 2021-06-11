@@ -107,15 +107,6 @@ public class SapHanaSingleResult extends BatchJobTemplate implements Runnable {
 		gData.sqlReq.saveResult("update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id=" + params.get("job_id"));
 		
 	}
-
-	protected void saveSingleResult() {
-		
-		
-		
-		
-	}
-	
-	
 	
 	protected boolean doSapHanaSql(remoteSystem s, ConnectionData conData, String remoteSQL) {
 		boolean out = false;
