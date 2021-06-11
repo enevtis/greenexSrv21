@@ -72,7 +72,8 @@ public class AbapSt22Dumps extends BatchJobTemplate implements Runnable {
 
 		}
 
-		gData.sqlReq.saveResult("update monitor_schedule set running=' ' where id=" + params.get("job_id"));
+		gData.sqlReq.saveResult("update monitor_schedule set running=' ',last_analyze=now(),checks_analyze=checks_analyze+1 where id=" + params.get("job_id"));
+	
 
 	}
 
