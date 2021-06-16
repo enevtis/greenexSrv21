@@ -49,11 +49,11 @@ public class HouseKeepingJob extends BatchJobTemplate implements Runnable{
 		
 		List<String> sql_list = new ArrayList<String>();
 		
-		
-		SQL = "delete from monitor_results a \n"; 
+		SQL = "DELETE FROM monitor_results WHERE id IN ( \n"; 
+		SQL += "select a.id from monitor_results a \n"; 
 		SQL += "left join monitor_schedule b on a.monitor_number = b.number  \n";  
-		SQL += "where DATEDIFF(CURDATE(),a.check_date) > b.keep_days  \n"; 
-		sql_list.add(SQL);		
+		SQL += "where DATEDIFF(CURDATE(),a.check_date) > b.keep_days)  \n"; 
+//		sql_list.add(SQL);		
 		
 		
 		SQL = "delete from monitor_disks where " ;

@@ -10,8 +10,8 @@ import greenexSrv2.nvs.com.globalData;
 public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 	public String monitor_number = "101";
 
-	public AnalyzeScanDisks(globalData gData) {
-		super(gData, null);
+	public AnalyzeScanDisks(globalData gData, Map<String, String> params) {
+		super(gData,params);
 	}
 
 	@Override

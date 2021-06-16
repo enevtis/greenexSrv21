@@ -14,8 +14,8 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 
 	public String monitor_number = "220";
 	
-	public AnalyzeScanOracleTs(globalData gData) {
-		super(gData,null);
+	public AnalyzeScanOracleTs(globalData gData, Map<String, String> params) {
+		super(gData,params);
 	}
 
 	@Override
