@@ -9,9 +9,9 @@ import greenexSrv2.nvs.com.globalData;
 
 public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 	public String monitor_number = "101";
-	
+
 	public AnalyzeScanDisks(globalData gData) {
-		super(gData,null);
+		super(gData, null);
 	}
 
 	@Override
@@ -19,7 +19,9 @@ public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 
 		try {
 
+			setRunningFlag_regular();
 			analyze();
+			reSetRunningFlag_regular();
 
 		} catch (Exception e) {
 
@@ -35,30 +37,27 @@ public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 		checkNewAlertsForDisks();
 		checkRecoveredAlertsForDisks();
 
-
 	}
 
 	protected void checkRecoveredAlertsForDisks() {
-		
-		String SQL = readFrom_sql_text(this.getClass().getSimpleName(),"analyze_recovered_disks_space");	
+
+		String SQL = readFrom_sql_text(this.getClass().getSimpleName(), "analyze_recovered_disks_space");
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
-		
+
 		for (Map<String, String> rec : records_list) {
 
 			if (rec.get("action").equals("recovery")) {
 
-				if (!checkIfAlertAlreadyExists(rec.get("server_guid"), monitor_number,
-						rec.get("name"))) {
+				if (!checkIfAlertAlreadyExists(rec.get("server_guid"), monitor_number, rec.get("name"))) {
 
 					String SQL1 = "";
 
 					SQL1 += "update `problems` set  ";
 					SQL1 += "is_fixed='X', ";
-					SQL1 += "fixed=now(), ";					
-					SQL1 += "fixed_result=" + rec.get("percent") + ", ";					
-					SQL1 += "description='permitted percent=" + rec.get("permitted_percent") + "'";						
-					SQL1 += " where id=" + rec.get("id");					
-
+					SQL1 += "fixed=now(), ";
+					SQL1 += "fixed_result=" + rec.get("percent") + ", ";
+					SQL1 += "description='permitted percent=" + rec.get("permitted_percent") + "'";
+					SQL1 += " where id=" + rec.get("id");
 
 					gData.sqlReq.saveResult(SQL1);
 
@@ -67,15 +66,11 @@ public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 
 		}
 
-		
-		
-		
-		
 	}
-	
+
 	protected void checkNewAlertsForDisks() {
-		
-		String SQL = readFrom_sql_text(this.getClass().getSimpleName(),"analyze_disks_space");
+
+		String SQL = readFrom_sql_text(this.getClass().getSimpleName(), "analyze_disks_space");
 
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
@@ -86,8 +81,7 @@ public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 
 					if (rec.get("is_alert").equals("alert")) {
 
-						if (!checkIfAlertAlreadyExists(rec.get("server_guid"), monitor_number,
-								rec.get("name"))) {
+						if (!checkIfAlertAlreadyExists(rec.get("server_guid"), monitor_number, rec.get("name"))) {
 
 							String insSQL = "";
 
@@ -106,7 +100,7 @@ public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 							insSQL += "" + monitor_number + ",";
 							insSQL += "'" + rec.get("check_date") + "',";
 							insSQL += "" + rec.get("percent") + ",";
-							insSQL += "" + rec.get("max_percent") ;
+							insSQL += "" + rec.get("max_percent");
 							insSQL += ")";
 
 							gData.sqlReq.saveResult(insSQL);
@@ -118,8 +112,5 @@ public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 			}
 		}
 
-		
-		
-		
 	}
 }

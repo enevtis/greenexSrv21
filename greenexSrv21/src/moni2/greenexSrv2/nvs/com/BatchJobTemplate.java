@@ -432,4 +432,33 @@ public class BatchJobTemplate {
 
 		return out;
 	}
+
+	protected boolean setRunningFlag_shedule() {
+		boolean out = false;
+		
+		gData.sqlReq.saveResult("update monitor_schedule set running='X' where id=" + params.get("job_id"));
+		
+		return out;
+	}
+	protected boolean reSetRunningFlag_shedule() {
+		boolean out = false;
+		List<String> sqlList = new ArrayList<String>();
+		gData.sqlReq.saveResult("update monitor_schedule set running=' ',counter=counter+1 where id=" + params.get("job_id"));
+		
+		return out;
+	}
+	protected boolean setRunningFlag_regular() {
+		boolean out = false;
+		
+		gData.sqlReq.saveResult("update regular_schedule set running='X' where id=" + params.get("job_id"));
+		
+		return out;
+	}
+	protected boolean reSetRunningFlag_regular() {
+		boolean out = false;
+		gData.sqlReq.saveResult("update regular_schedule set running=' ',counter=counter+1 where id=" + params.get("job_id"));
+
+		
+		return out;
+	}
 }

@@ -13,8 +13,8 @@ import greenexSrv2.nvs.com.globalData;
 public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 
 
-	public AnalyzeScan(globalData gData) {
-		super(gData,null);
+	public AnalyzeScan(globalData gData, Map<String, String> params) {
+		super(gData,params);
 	}
 
 	@Override
@@ -22,7 +22,11 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 
 		try {
 
+			setRunningFlag_regular();
+			
 			analyze();
+			
+			reSetRunningFlag_regular();
 
 		} catch (Exception e) {
 

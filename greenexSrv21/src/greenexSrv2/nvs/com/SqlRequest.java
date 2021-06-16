@@ -229,15 +229,16 @@ public class SqlRequest {
 		return resordsMap;
 	}
 
-	public void saveResult(List<String> sqlList) {
-
+	public boolean saveResult(List<String> sqlList) {
+	
+		boolean out = false;
 		String currSQL = "";
 
 		if (sqlList == null)
-			return;
+			return false;
 
 		if (sqlList.size() == 0)
-			return;
+			return false;
 
 		Connection conn = null;
 
@@ -253,6 +254,7 @@ public class SqlRequest {
 			}
 
 			conn.close();
+			out = true;
 
 		} catch (Exception e) {
 
@@ -270,6 +272,8 @@ public class SqlRequest {
 			}
 		}
 
+	
+	return out;
 	}
 
 	public void saveResult(String sqlLine) {

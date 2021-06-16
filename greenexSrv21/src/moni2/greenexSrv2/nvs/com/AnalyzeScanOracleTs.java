@@ -22,7 +22,9 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 	public void run() {
 		try {
 
+			setRunningFlag_regular();
 			analyze();
+			reSetRunningFlag_regular();
 
 		} catch (Exception e) {
 
