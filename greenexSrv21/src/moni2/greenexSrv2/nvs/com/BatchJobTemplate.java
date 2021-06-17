@@ -443,7 +443,7 @@ public class BatchJobTemplate {
 	protected boolean reSetRunningFlag_shedule() {
 		boolean out = false;
 		List<String> sqlList = new ArrayList<String>();
-		gData.sqlReq.saveResult("update monitor_schedule set running=' ',counter=counter+1 where id=" + params.get("job_id"));
+		gData.sqlReq.saveResult("update monitor_schedule set running=' ',checks_analyze=checks_analyze+1 where id=" + params.get("job_id"));
 		
 		return out;
 	}

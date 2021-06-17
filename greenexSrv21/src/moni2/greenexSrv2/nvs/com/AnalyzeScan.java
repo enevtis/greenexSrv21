@@ -201,6 +201,7 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 
 						updSQL += "update `problems` set `is_fixed`='X', ";
 						updSQL += "`fixed_result`=" + rec.get("new_result_number") + ",";
+						updSQL += "`fixed_limit`=" + rec.get("new_value_limit") + ",";						
 						updSQL += "`fixed`=NOW() where guid='" + rec.get("guid") + "'";
 
 						gData.sqlReq.saveResult(updSQL);

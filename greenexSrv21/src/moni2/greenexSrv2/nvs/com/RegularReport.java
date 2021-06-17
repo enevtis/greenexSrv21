@@ -11,8 +11,8 @@ import greenexSrv2.nvs.com.globalData;
 
 public class RegularReport extends BatchJobTemplate implements Runnable {
 
-	public RegularReport(globalData gData) {
-		super(gData, null);
+	public RegularReport(globalData gData, Map<String, String> params) {
+		super(gData,params);
 	}
 
 	@Override
