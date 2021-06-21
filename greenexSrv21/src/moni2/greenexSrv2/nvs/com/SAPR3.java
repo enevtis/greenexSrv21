@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -13,11 +15,15 @@ import com.sap.conn.jco.JCoContext;
 import com.sap.conn.jco.JCoDestination;
 import com.sap.conn.jco.JCoDestinationManager;
 import com.sap.conn.jco.JCoException;
+import com.sap.conn.jco.JCoField;
+import com.sap.conn.jco.JCoFieldIterator;
 import com.sap.conn.jco.JCoFunction;
+import com.sap.conn.jco.JCoStructure;
 import com.sap.conn.jco.JCoTable;
 import com.sap.conn.jco.ext.DestinationDataProvider;
 
 import greenexSrv2.nvs.com.globalData;
+import obj.greenexSrv2.nvs.com.SqlReturn;
 
 public class SAPR3 {
 	public globalData gData = null;
@@ -32,28 +38,27 @@ public class SAPR3 {
 	public String readTable(String tableName, String fields, String filter, String delim) {
 		String out = "";
 
-		createAbapDestination(); 			
-
+		createAbapDestination();
 
 		try {
 
 			out = rfcReadTable(tableName, fields, filter, delim);
 
 		} catch (JCoException e) {
-			
+
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
 			gData.logger.info(errors.toString());
 			out = "CONNECT_ERROR";
-			
-			
+
 		}
 
 		return out;
 	}
 
-	public void createAbapDestination() {
+	public String createAbapDestination() {
 
+		String out = "";
 		String dest_name = "currAbap";
 
 		Properties connectProperties = new Properties();
@@ -72,10 +77,12 @@ public class SAPR3 {
 
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
+			out = errors.toString();
 			gData.logger.info(errors.toString());
 
 		}
 
+		return out;
 	}
 
 	public void createDestinationDataFile(String destinationName, Properties connectProperties) {
@@ -144,6 +151,119 @@ public class SAPR3 {
 
 		return out;
 
+	}
+
+	public String rfcGetSystemInfo() {
+		String out = "";
+
+		String FUNCTION_NAME = "RFC_GET_SYSTEM_INFO";
+
+		out = FUNCTION_NAME;
+
+		createAbapDestination();
+
+		JCoContext.begin(destination);
+
+		JCoFunction function = null;
+		try {
+
+			function = destination.getRepository().getFunction(FUNCTION_NAME);
+
+			function.getImportParameterList().setValue("DESTINATION", "NONE");
+			function.execute(destination);
+
+			JCoStructure struct = function.getExportParameterList().getStructure("RFCSI_EXPORT");
+
+			JCoFieldIterator fieldIt = struct.getFieldIterator();
+
+			while (fieldIt.hasNextField()) {
+				JCoField field = fieldIt.nextField();
+				out += field.getName() + "=" + field.getString() + "::";
+			}
+
+		} catch (JCoException e) {
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.severe(errors.toString());
+			out = errors.toString();
+		} finally {
+
+			try {
+				JCoContext.end(destination);
+			} catch (JCoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		if (function == null) {
+
+			StringWriter errors = new StringWriter();
+			gData.logger.severe(FUNCTION_NAME + " not found in SAP.");
+		}
+
+		return out;
+	}
+
+	public SqlReturn th_WPInfo(String srvName) {
+
+		SqlReturn out = new SqlReturn();
+
+		String FUNCTION_NAME = "TH_WPINFO";
+		createAbapDestination();
+
+		JCoContext.begin(destination);
+
+		JCoFunction function = null;
+		try {
+
+			function = destination.getRepository().getFunction(FUNCTION_NAME);
+
+			if (!srvName.isEmpty())
+				function.getImportParameterList().setValue("SRVNAME", srvName);
+
+			function.execute(destination);
+
+			JCoTable outTable = function.getTableParameterList().getTable("WPLIST");
+
+			for (int i = 0; i < outTable.getNumRows(); i++) {
+				outTable.setRow(i);
+				Map<String, String> record = new HashMap<String, String>();
+
+				JCoFieldIterator iter = outTable.getFieldIterator();
+//			        LinkedHashMap m = new LinkedHashMap();
+				while (iter.hasNextField()) {
+					JCoField f = iter.nextField();
+					record.put(f.getName(), outTable.getValue(f.getName()) + "");
+
+//			            out += f.getName()+ "=" + outTable.getValue(f.getName()) + "<br>";
+				}
+
+				out.records.add(record);
+
+			}
+
+		} catch (JCoException e) {
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.severe(errors.toString());
+
+		} finally {
+
+			try {
+				JCoContext.end(destination);
+			} catch (JCoException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		if (function == null) {
+
+			StringWriter errors = new StringWriter();
+			gData.logger.severe(FUNCTION_NAME + " not found in SAP.");
+		}
+
+		return out;
 	}
 
 }

@@ -41,7 +41,7 @@ public class AbapSm13Records extends BatchJobTemplate implements Runnable {
 
 		String message = "";
 
-		gData.logger.info("*** <p style='color:blue;'>Running " + params.get("job_name") + "</p>");
+//		gData.logger.info("*** <p style='color:blue;'>Running " + params.get("job_name") + "</p>");
 
 //		gData.sqlReq.saveResult("update monitor_schedule set running='X' where id=" + params.get("job_id"));
 

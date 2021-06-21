@@ -1090,6 +1090,14 @@ public class HandlerTemplate {
 			break;
 		case "app_systems":
 
+			out.ip = readOneValue("SELECT def_ip FROM app_systems WHERE guid='" + pr.physGuid + "'");
+			out.port = readOneValue("SELECT port FROM app_systems WHERE guid='" + pr.physGuid + "'");
+			out.sid = readOneValue("SELECT sid FROM app_systems WHERE guid='" + pr.physGuid + "'");
+			out.sysnr = readOneValue("SELECT sysnr FROM app_systems WHERE guid='" + pr.physGuid + "'");
+			out.appType = readOneValue("SELECT app_typ FROM app_systems WHERE guid='" + pr.physGuid + "'");
+
+			
+			
 			break;
 
 		}

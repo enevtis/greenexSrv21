@@ -27,13 +27,24 @@ public class SshSingleResult extends BatchJobTemplate implements Runnable {
 
 	@Override
 	public void run() {
-		doCheck();
+		try {
+
+			setRunningFlag_shedule();
+			doCheck();
+			reSetRunningFlag_shedule();
+
+		} catch (Exception e) {
+
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.severe(errors.toString());
+		}
 	}
 
 	public void doCheck() {
 
 		gData.logger.info("<p style='color:blue;'>Start " + params.get("job_name") + "</p>");
-		gData.sqlReq.saveResult("update monitor_schedule set active=' ' where id=" + params.get("job_id"));
+//		gData.sqlReq.saveResult("update monitor_schedule set active=' ' where id=" + params.get("job_id"));
 		
 		
 
@@ -100,12 +111,12 @@ public class SshSingleResult extends BatchJobTemplate implements Runnable {
 
 		}
 
-		gData.logger.info("*** <p style='color:blue;'>End " + params.get("job_name") + "</p>");
+//		gData.logger.info("*** <p style='color:blue;'>End " + params.get("job_name") + "</p>");
 		
 		
-		gData.sqlReq.saveResult(
-				"update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
-						+ params.get("job_id"));
+//		gData.sqlReq.saveResult(
+//				"update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
+//						+ params.get("job_id"));
 		
 		if (gData.debugMode) gData.saveToLog(params.get("job_name") + " finished succesfully", params.get("job_name"));
 

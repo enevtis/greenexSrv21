@@ -64,6 +64,9 @@ public class TechParamsHandler extends HandlerTemplate {
 		
 		SQL = SQL.replace("<PHISGUID>", params.get("guid"));
 		
+		gData.logger.info(SQL);
+		
+		
 
 		this.fields = readMetadatafromDB(this.getClass().getSimpleName(),pr.obj_typ);
 

@@ -1,5 +1,7 @@
 package moni2.greenexSrv2.nvs.com;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +21,18 @@ public class OracleSingleResult extends BatchJobTemplate implements Runnable {
 
 	@Override
 	public void run() {
+		try {
 
+			setRunningFlag_shedule();
+			doCheck();
+			reSetRunningFlag_shedule();
 
-		doCheck();
+		} catch (Exception e) {
 
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.severe(errors.toString());
+		}
 
 	}
 
@@ -31,7 +41,7 @@ public class OracleSingleResult extends BatchJobTemplate implements Runnable {
 		String message ="",filter = "";
 		
 		gData.logger.info("*** <p style='color:blue;'>Start " + params.get("job_name") + "</p>");
-		gData.sqlReq.saveResult("update monitor_schedule set active=' ' where id=" + params.get("job_id"));
+//		gData.sqlReq.saveResult("update monitor_schedule set active=' ' where id=" + params.get("job_id"));
 	
 		filter = "oracle";
 		String remoteSQL = read_from_sql_remote_check(this.getClass().getSimpleName(),params.get("job_name"),filter);
@@ -105,9 +115,9 @@ public class OracleSingleResult extends BatchJobTemplate implements Runnable {
 		}
 
 		gData.logger.info("*** <p style='color:blue;'>End " + params.get("job_name") + "</p>");
-		gData.sqlReq.saveResult(
-				"update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
-						+ params.get("job_id"));
+//		gData.sqlReq.saveResult(
+//				"update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
+//						+ params.get("job_id"));
 
 	}
 
