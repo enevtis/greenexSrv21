@@ -213,8 +213,8 @@ public class BatchJobTemplate {
 
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			gData.logger.severe("<p stype='color:red;'> ip=" + conData.ip + " user=" + conData.user + " hash="
-					+ conData.hash + " gave an connect error" + errors.toString() + "<br>" + remoteSshText + "</p>");
+			gData.logger.severe("<p stype='color:red;'> ip=" + conData.ip + " user=" + conData.user 
+					+ " gave an connect error" + errors.toString() + "<br>" + remoteSshText + "</p>");
 			s.params.put("result", errors.toString());
 			out = false;
 		}

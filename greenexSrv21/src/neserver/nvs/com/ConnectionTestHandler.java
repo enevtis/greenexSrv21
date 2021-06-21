@@ -179,37 +179,6 @@ public class ConnectionTestHandler extends HandlerTemplate {
 	}
 
 
-	protected String checkConnectSAPABAP(ConnectionData conData) {
-		String out = "";
-		Map<String, String> params = new HashMap();
-		
-		params.put("ip", conData.ip);
-		params.put("sysnr", conData.sysnr);
-		params.put("user", conData.user);
-		params.put("password", conData.password);
-		params.put("clnt", conData.clnt);
-
-		SAPR3 sr3 = new SAPR3(gData, params);
-		
-//		SqlReturn ret  = sr3.th_WPInfo("svo-erp-tst01_EAP_02");
-		SqlReturn ret  = sr3.th_WPInfo("");
-		
-	    if (ret.isOk ) {
-	    	
-	    	for (Map<String, String> rec : ret.records) {
-				out += rec.get("WP_BNAME") + "<br>";
-	    	}
-		} else {
-
-			out += "Connection error";
-		}
-
-
-		return out;
-	}
-	
-	
-	
 //	protected String checkConnectSAPABAP(ConnectionData conData) {
 //		String out = "";
 //		Map<String, String> params = new HashMap();
@@ -222,19 +191,50 @@ public class ConnectionTestHandler extends HandlerTemplate {
 //
 //		SAPR3 sr3 = new SAPR3(gData, params);
 //		
-//		String response=sr3.rfcGetSystemInfo();
+////		SqlReturn ret  = sr3.th_WPInfo("svo-erp-tst01_EAP_02");
+//		SqlReturn ret  = sr3.th_WPInfo("");
 //		
-//		String lines[] = response.split("::");
-//		
-//		for (int i=0; i < lines.length; i++) {
-//			
-//			
-//			out += lines[i] + " <br>";
-//			
+//	    if (ret.isOk ) {
+//	    	
+//	    	for (Map<String, String> rec : ret.records) {
+//				out += rec.get("WP_BNAME") + "<br>";
+//	    	}
+//		} else {
+//
+//			out += "Connection error";
 //		}
+//
 //
 //		return out;
 //	}
+	
+	
+	
+	protected String checkConnectSAPABAP(ConnectionData conData) {
+		String out = "";
+		Map<String, String> params = new HashMap();
+		
+		params.put("ip", conData.ip);
+		params.put("sysnr", conData.sysnr);
+		params.put("user", conData.user);
+		params.put("password", conData.password);
+		params.put("clnt", conData.clnt);
+
+		SAPR3 sr3 = new SAPR3(gData, params);
+		
+		String response=sr3.rfcGetSystemInfo();
+		
+		String lines[] = response.split("::");
+		
+		for (int i=0; i < lines.length; i++) {
+			
+			
+			out += lines[i] + " <br>";
+			
+		}
+
+		return out;
+	}
 
 	private String checkConnectLinux(ConnectionData conData, String text) {
 
