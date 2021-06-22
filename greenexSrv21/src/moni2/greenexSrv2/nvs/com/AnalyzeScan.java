@@ -121,7 +121,7 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 						newAlerts++;
 						object_guids.add(rec.get("object_guid"));
 
-						subjectLetterProblem += " problem " + rec.get("short");
+						subjectLetterProblem += rec.get("short") + ",";
 						style = "color:red;";
 						bodyLetter += "<li style='" + style + "'>";
 						

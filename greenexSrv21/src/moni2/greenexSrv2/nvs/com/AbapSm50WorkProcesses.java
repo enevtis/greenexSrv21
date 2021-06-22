@@ -58,95 +58,106 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 			s.params.put("password", conData.password);
 			s.params.put("clnt", conData.clnt);
 			s.params.put("job_name", params.get("job_name"));
-			
+
 			List<String> wpListInsert = new ArrayList();
-			wpListInsert.add( "delete from monitor_abap_wp where object_guid='" + s.params.get("guid") + "'");
-			
+			wpListInsert.add("delete from monitor_abap_wp where object_guid='" + s.params.get("guid") + "'");
+
 			String SQL = "select app_server from monitor_abap_app_servers ";
 			SQL += "where object_guid='" + s.params.get("guid") + "' order by id";
-			
-			
+
 			List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
 			String serverName = "";
 
-			if ( records.size() > 0 ) {
+			if (records.size() > 0) {
 				for (Map<String, String> rec : records) {
 					serverName = rec.get("app_server");
-					do_Sm50_AbapRequest(s.params, wpListInsert,serverName);
+					do_Sm50_AbapRequest(s.params, wpListInsert, serverName);
 				}
 			} else {
-			
-					serverName = "";
-					do_Sm50_AbapRequest(s.params, wpListInsert,serverName);
-			
+
+				serverName = "";
+				do_Sm50_AbapRequest(s.params, wpListInsert, serverName);
+
 			}
-			
+
 			gData.sqlReq.saveResult(wpListInsert);
-			
-		}	
-			
+			insertRecordIntoMonitorResults(s, params);
 
-	
-	
+		}
+
 	}
 
-		protected boolean do_Sm50_AbapRequest(Map<String, String> params, List<String> wpList, String serverName) {
-			boolean out = false;
-			SAPR3 sr3 = new SAPR3(gData, params);
+	protected boolean do_Sm50_AbapRequest(Map<String, String> params, List<String> wpList, String serverName) {
+		boolean out = false;
+		SAPR3 sr3 = new SAPR3(gData, params);
 
-			String insPhrase = "insert into monitor_abap_wp (";
-			insPhrase += "`object_guid`, ";
-			insPhrase += "`app_server`, ";
-			insPhrase += "`wp_index`, ";
-			insPhrase += "`wp_typ`, ";
-			insPhrase += "`wp_pid`, ";
-			insPhrase += "`wp_status`, ";
-			insPhrase += "`wp_dumps`, ";
-			insPhrase += "`wp_mandt`, ";
-			insPhrase += "`wp_bname`, ";
-			insPhrase += "`wp_report`, ";
-			insPhrase += "`wp_action`, ";
-			insPhrase += "`wp_table`, ";
-			insPhrase += "`check_date` ";
-			insPhrase += ") values ( ";
+		String insPhrase = "insert into monitor_abap_wp (";
+		insPhrase += "`object_guid`, ";
+		insPhrase += "`app_server`, ";
+		insPhrase += "`wp_index`, ";
+		insPhrase += "`wp_typ`, ";
+		insPhrase += "`wp_pid`, ";
+		insPhrase += "`wp_status`, ";
+		insPhrase += "`wp_dumps`, ";
+		insPhrase += "`wp_mandt`, ";
+		insPhrase += "`wp_bname`, ";
+		insPhrase += "`wp_report`, ";
+		insPhrase += "`wp_action`, ";
+		insPhrase += "`wp_table`, ";
+		insPhrase += "`check_date` ";
+		insPhrase += ") values ( ";
 
-			String SQL = "";
+		String SQL = "";
 
-			
-			SqlReturn ret  = sr3.th_WPInfo(serverName);
-			
-		    if (ret.isOk ) {
-		    	
-		    	for (Map<String, String> rec : ret.records) {
-					
-		    		SQL = insPhrase;
-		    		SQL += "'" + params.get("guid") + "',";
-		    		SQL += "'" + serverName + "',";		    		
-		    		SQL += "'" + rec.get("WP_INDEX") + "',";
-		    		SQL += "'" + rec.get("WP_TYP") + "',";
-		    		SQL += "'" + rec.get("WP_PID") + "',";
-		    		SQL += "'" + rec.get("WP_STATUS") + "',";
-		    		SQL += "'" + rec.get("WP_DUMPS") + "',";
-		    		SQL += "'" + rec.get("WP_MANDT") + "',";
-		    		SQL += "'" + rec.get("WP_BNAME") + "',";
-		    		SQL += "'" + rec.get("WP_REPORT") + "',";
-		    		SQL += "'" + rec.get("WP_ACTION") + "',";
-		    		SQL += "'" + rec.get("WP_TABLE") + "',";
-		    		SQL += "now()";
-		    		SQL += ")";
+		SqlReturn ret = sr3.th_WPInfo(serverName);
 
-					wpList.add(SQL);	
-					
-		    	}
-			} else {
+		if (ret.isOk) {
 
-				out = false;
+			for (Map<String, String> rec : ret.records) {
+
+				SQL = insPhrase;
+				SQL += "'" + params.get("guid") + "',";
+				SQL += "'" + serverName + "',";
+				SQL += "'" + rec.get("WP_INDEX") + "',";
+				SQL += "'" + rec.get("WP_TYP") + "',";
+				SQL += "'" + rec.get("WP_PID") + "',";
+				SQL += "'" + rec.get("WP_STATUS") + "',";
+				SQL += "'" + rec.get("WP_DUMPS") + "',";
+				SQL += "'" + rec.get("WP_MANDT") + "',";
+				SQL += "'" + rec.get("WP_BNAME") + "',";
+				SQL += "'" + rec.get("WP_REPORT") + "',";
+				SQL += "'" + rec.get("WP_ACTION") + "',";
+				SQL += "'" + rec.get("WP_TABLE") + "',";
+				SQL += "now()";
+				SQL += ")";
+
+				wpList.add(SQL);
+
 			}
-			
-			
-	
-	
-			return out;
+		} else {
+
+			out = false;
+		}
+
+		return out;
 	}
 
+	protected void insertRecordIntoMonitorResults(remoteSystem s, Map<String, String> jobParams) {
+
+		String SQL_result = "";
+
+		SQL_result += "insert into monitor_results ( ";
+		SQL_result += "`object_guid`,`monitor_number`,";
+		SQL_result += "`check_date`,`result_number`,";
+		SQL_result += "`result_text`,`is_error`) values (";
+		SQL_result += "'" + s.params.get("guid") + "',";
+		SQL_result += "" + jobParams.get("job_number") + ",";
+		SQL_result += "now(),";
+		SQL_result += "" + s.params.get("result") + ",";
+		SQL_result += "'" + s.params.get("message") + "',";
+		SQL_result += "''";
+		SQL_result += ")";
+
+		gData.sqlReq.saveResult(SQL_result);
+	}
 }
