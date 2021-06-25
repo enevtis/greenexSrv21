@@ -95,6 +95,8 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 				insSQL += "" + freeLimitAbapWpPercent + ",";
 				insSQL += "'" + rec.get("last_check_date") + "'";
 				insSQL += ")";
+		
+				gData.saveToLog(insSQL, params.get("job_name"));
 				
 				newAlertsListSql.add(insSQL);	
 				

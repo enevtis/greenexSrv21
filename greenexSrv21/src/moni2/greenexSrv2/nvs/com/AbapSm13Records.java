@@ -4,10 +4,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
+import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
 import moni.greenexSrv2.nvs.com.remoteSystem;
 import obj.greenexSrv2.nvs.com.ConnectionData;
@@ -40,10 +42,6 @@ public class AbapSm13Records extends BatchJobTemplate implements Runnable {
 	protected void doCheck() {
 
 		String message = "";
-
-//		gData.logger.info("*** <p style='color:blue;'>Running " + params.get("job_name") + "</p>");
-
-//		gData.sqlReq.saveResult("update monitor_schedule set running='X' where id=" + params.get("job_id"));
 
 		List<remoteSystem> db_systems = readABAP_systemsListForCheck();
 		gData.saveToLog("found " + db_systems.size() + " systems to check.", params.get("job_name"), false);
@@ -87,8 +85,6 @@ public class AbapSm13Records extends BatchJobTemplate implements Runnable {
 
 		}
 
-//		gData.sqlReq.saveResult("update monitor_schedule set running=' ',last_analyze=now(),checks_analyze=checks_analyze+1 where id=" + params.get("job_id"));
-
 	}
 
 	protected boolean doAbapRequest(Map<String, String> params) {
@@ -114,7 +110,7 @@ public class AbapSm13Records extends BatchJobTemplate implements Runnable {
 		outR3 = sr3.readTable("VBHDR", "VBUSR,VBREPORT,VBDATE", filter, "");
 
 		if (outR3.equals("CONNECT_ERROR")) {
-			params.put("result", "-999");
+
 			params.put("message", "system " + params.get("short") + " " + params.get("sid") + " " + params.get("sysnr")
 					+ " not reached");
 
@@ -132,17 +128,22 @@ public class AbapSm13Records extends BatchJobTemplate implements Runnable {
 		int counter = 0;
 		String oldValue = "", newValue = "";
 
+		Map<String, Integer> totalValues = new HashMap();
+
 		for (int i = 0; i < strFields.length; i++) {
-
-//			gData.saveToLog(i + ") " + strFields[i], params.get("job_name"));
-
+			Utils.addHashMapValue(totalValues, strFields[0], 1);
 			counter++;
 
 		}
 
+		message = "Top user is: " + Utils.maxMapParameter(totalValues);
+
+		gData.saveToLog(message, params.get("job_name"));
+
 		params.put("result", "" + counter);
-		params.put("message", "");
+		params.put("message", message);
 
 		return out;
 	}
+
 }

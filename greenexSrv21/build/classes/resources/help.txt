@@ -1,4 +1,4 @@
 
-DELETE monitor_links WHERE id > 0;
+DELETE FROM monitor_links WHERE id > 0;
 UPDATE monitor_schedule SET running='',active = '' WHERE id > 0;
 UPDATE 			

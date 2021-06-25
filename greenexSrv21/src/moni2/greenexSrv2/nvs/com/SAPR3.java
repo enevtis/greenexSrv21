@@ -207,8 +207,10 @@ public class SAPR3 {
 	public SqlReturn th_WPInfo(String srvName) {
 
 		SqlReturn out = new SqlReturn();
+		out.isOk = false;
 
 		String FUNCTION_NAME = "TH_WPINFO";
+		
 		createAbapDestination();
 
 		JCoContext.begin(destination);
@@ -239,6 +241,7 @@ public class SAPR3 {
 				}
 
 				out.records.add(record);
+				out.isOk = true;
 
 			}
 
@@ -246,6 +249,8 @@ public class SAPR3 {
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
 			gData.logger.severe(errors.toString());
+			
+			out.isOk = false;
 
 		} finally {
 

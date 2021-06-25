@@ -3,6 +3,9 @@ package greenexSrv2.nvs.com;
 import java.util.List;
 import java.util.Map;
 
+import obj.greenexSrv2.nvs.com.ConnectionData;
+import obj.greenexSrv2.nvs.com.PhisObjProperties;
+
 public class Utils {
 
 	public static String cleanInvalidCharacters(String in) {
@@ -71,4 +74,96 @@ public class Utils {
 			out = (int) result;
 			return out;
 		}
+		public static String maxMapParameter(Map<String,Integer> values) {
+	
+			
+			String out = "";
+			String maxKey = "";
+			int maxValue = 0;
+			
+			for(Map.Entry<String, Integer> entry : values.entrySet()) {
+			    String key = entry.getKey();
+			    Integer value = entry.getValue();
+
+			    if (maxValue ==0 ) {
+			    	maxKey = key;
+			    	maxValue = value;
+			    }
+			    
+			    
+			    if (value > maxValue) {
+			    	maxKey = key;
+			    	maxValue = value;
+			    	
+			    }
+			    
+			}
+			
+			out = maxKey + "=" + maxValue;
+			return out ;
+		}
+		public static void addHashMapValue(Map<String,Integer> values,String key, int val) {
+			
+			if(values.containsKey(key))  values.put(key, val + values.get(key)); 
+			else values.put(key, val);
+			
+		} 
+
+		public static ConnectionData readConnectionParameters(globalData gData, PhisObjProperties pr) {
+			ConnectionData out = new ConnectionData();
+			String SQL = "select * from monitor_conn_data where object_guid='" + pr.physGuid + "'";
+
+			List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
+			if (records_list != null) {
+				if (records_list.size() > 0) {
+					for (Map<String, String> rec : records_list) {
+						out.user = rec.get("user");
+						out.hash = rec.get("hash");
+						out.conn_type = rec.get("conn_type");
+						out.clnt = rec.get("clnt");
+						out.password = gData.getPasswordFromHash(out.hash);
+					}
+				}
+			}
+
+			switch (pr.obj_typ) {
+			case "servers":
+				out.ip = gData.sqlReq.readOneValue("SELECT def_ip FROM servers WHERE guid='" + pr.physGuid + "'");
+
+				break;
+			case "db_systems":
+
+				records_list = gData.sqlReq.getSelect("SELECT * FROM db_systems WHERE guid='" + pr.physGuid + "'");
+				for (Map<String, String> rec : records_list) {
+					out.ip = rec.get("def_ip");
+					out.port = rec.get("port");
+					out.sid = rec.get("sid");
+					out.sysnr = rec.get("sysnr");
+					out.dbType = rec.get("db_type");
+				}
+
+
+				break;
+			case "app_systems":
+
+				records_list = gData.sqlReq.getSelect("SELECT * FROM app_systems WHERE guid='" + pr.physGuid + "'");
+				for (Map<String, String> rec : records_list) {
+					out.ip = rec.get("def_ip");
+					out.port = rec.get("port");
+					out.sid = rec.get("sid");
+					out.sysnr = rec.get("sysnr");
+					out.appType = rec.get("app_typ");
+					out.protocol = rec.get("protocol");
+					out.page = rec.get("page");
+				}
+				
+				
+				break;
+
+			}
+
+			return out;
+		}
+
+		
 }

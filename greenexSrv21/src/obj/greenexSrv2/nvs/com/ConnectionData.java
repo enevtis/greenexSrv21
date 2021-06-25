@@ -15,4 +15,6 @@ public class ConnectionData {
 	public String password = "";
 	public String dbType = "";
 	public String appType = "";
+	public String protocol = "";
+	public String page = "";
 }

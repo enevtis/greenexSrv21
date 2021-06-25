@@ -60,7 +60,6 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 			s.params.put("job_name", params.get("job_name"));
 
 			List<String> wpListInsert = new ArrayList();
-			wpListInsert.add("delete from monitor_abap_wp where object_guid='" + s.params.get("guid") + "'");
 
 			String SQL = "select app_server from monitor_abap_app_servers ";
 			SQL += "where object_guid='" + s.params.get("guid") + "' order by id";
@@ -80,7 +79,13 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 
 			}
 
-			gData.sqlReq.saveResult(wpListInsert);
+	
+			if(wpListInsert.size() > 0) {
+				
+				gData.sqlReq.saveResult("delete from monitor_abap_wp where object_guid='" + s.params.get("guid") + "'");
+				gData.sqlReq.saveResult(wpListInsert);
+			
+			}
 			insertRecordIntoMonitorResults(s, params);
 
 		}
