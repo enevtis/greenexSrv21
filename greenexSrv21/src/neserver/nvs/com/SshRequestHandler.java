@@ -42,7 +42,7 @@ public class SshRequestHandler extends HandlerTemplate {
 		ConnectionData conData = readConnectionParameters(pr);
 		
 		
-		if (gData.debugMode) gData.saveToLog("pr.description= " + pr.description + " pr.shortCaption=" + pr.shortCaption, this.getClass().getSimpleName(),false);
+		gData.saveToLog("pr.description= " + pr.description + " pr.shortCaption=" + pr.shortCaption, this.getClass().getSimpleName());
 		
 		this.caption += " " + pr.description;
 		

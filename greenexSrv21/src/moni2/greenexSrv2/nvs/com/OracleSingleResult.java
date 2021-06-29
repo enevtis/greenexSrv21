@@ -40,8 +40,6 @@ public class OracleSingleResult extends BatchJobTemplate implements Runnable {
 
 		String message ="",filter = "";
 		
-		gData.logger.info("*** <p style='color:blue;'>Start " + params.get("job_name") + "</p>");
-//		gData.sqlReq.saveResult("update monitor_schedule set active=' ' where id=" + params.get("job_id"));
 	
 		filter = "oracle";
 		String remoteSQL = read_from_sql_remote_check(this.getClass().getSimpleName(),params.get("job_name"),filter);
@@ -58,13 +56,12 @@ public class OracleSingleResult extends BatchJobTemplate implements Runnable {
 		
 		List<remoteSystem> db_systems = readDB_systemsListForCheck();
 		
-		if (gData.debugMode) gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"),false);
+		gData.truncateLog(params.get("job_name"));
+		gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"));
 
 		for (remoteSystem s : db_systems) {
 
 			message = s.params.get("guid") + ": ip=" + s.params.get("ip") + " sid=" + s.params.get("sid") + " db_type=" + s.params.get("db_type");
-			
-			gData.logger.info("*** <p class='check_db_runnig'>Running " + message + " " + params.get("job_name") + "</p>");
 			
 			ObjectParametersReader parReader = new ObjectParametersReader(gData);
 			PhisObjProperties pr = parReader.getParametersPhysObject(s.params.get("guid"));	
@@ -108,16 +105,11 @@ public class OracleSingleResult extends BatchJobTemplate implements Runnable {
 			}
 
 			
-			if (gData.debugMode) gData.saveToLog(message, params.get("job_name"));
+			gData.saveToLog(message, params.get("job_name"));
 
 			
 			gData.sqlReq.saveResult(SQL_result);	
 		}
-
-		gData.logger.info("*** <p style='color:blue;'>End " + params.get("job_name") + "</p>");
-//		gData.sqlReq.saveResult(
-//				"update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
-//						+ params.get("job_id"));
 
 	}
 

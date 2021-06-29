@@ -55,7 +55,9 @@ public class checkWebPage extends BatchJobTemplate implements Runnable {
 		String message = "";
 
 		List<remoteSystem> db_systems = readABAP_systemsListForCheck();
-		gData.saveToLog("found " + db_systems.size() + " systems to check.", params.get("job_name"), false);
+		
+		gData.truncateLog(params.get("job_name"));
+		gData.saveToLog("found " + db_systems.size() + " systems to check.", params.get("job_name"));
 
 		for (remoteSystem s : db_systems) {
 			message = s.params.get("short") + " " + s.params.get("ip") + " " + s.params.get("sid") + " "

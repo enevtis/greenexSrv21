@@ -164,6 +164,41 @@ public class Utils {
 
 			return out;
 		}
+		public static String timeConvert(int time) { 
+			String out = "";
+			int days = time/24/60;
+			int hours = time/60%24;
+			int minutes = time%60;
+			
+			
+			
+			if (days > 0) {
+				
+				if (days==1) out+= days + " день ";
+				else if (days >= 2 && days <= 4) out+= days + " дня ";
+				else out+= days + " дней ";
+			}
+			if (hours > 0) {
 
+				if (hours==1) out+= hours + " час ";
+				else if (hours >= 2 && hours <= 4 || hours >= 22 && hours <= 24 ) out+= hours + " часа ";
+				else out+= hours + " часов ";			
+
+			}
+			if (minutes > 0) {
+
+				if (minutes==1) out+= minutes + " минута ";
+				else if (minutes >= 2 && minutes <= 4 ||
+						minutes >= 22 && minutes <= 24 ||
+						minutes >= 32 && minutes <= 34 ||
+						minutes >= 42 && minutes <= 44 ||
+						minutes >= 52 && minutes <= 54 										
+						) out+= minutes + " минуты ";
+				else out+= minutes + " минут ";			
+
+			}		
+		
+			return out;
+		}
 		
 }

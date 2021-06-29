@@ -418,10 +418,8 @@ public class globalData {
 		return out;
 	}
 
+
 	public void saveToLog(String outText, String fileName) {
-		saveToLog(outText, fileName, true);
-	}
-	public void saveToLog(String outText, String fileName, boolean append) {
 
 		String fullFileName = this.mainPath + File.separator + "log" + File.separator + fileName + ".log";
 
@@ -432,9 +430,32 @@ public class globalData {
 			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			Date date = new Date();
 
-			FileWriter fr = new FileWriter(fileOut, append);
+			FileWriter fr = new FileWriter(fileOut, true);
 			BufferedWriter br = new BufferedWriter(fr);
 			br.write(dateFormat.format(date) + ": " + outText + "\r\n");
+
+			br.close();
+			fr.close();
+
+		} catch (Exception e) {
+			this.logger.info(e.getMessage());
+		}
+
+	}
+	public void truncateLog(String fileName) {
+
+		String fullFileName = this.mainPath + File.separator + "log" + File.separator + fileName + ".log";
+
+	
+		try {
+			File fileOut = new File(fullFileName);
+
+			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+			Date date = new Date();
+
+			FileWriter fr = new FileWriter(fileOut, false);
+			BufferedWriter br = new BufferedWriter(fr);
+			br.write("");
 
 			br.close();
 			fr.close();
@@ -466,5 +487,7 @@ public class globalData {
               }  
     } 
 
-
+public String nowForSQL() {
+	return new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+}
 }

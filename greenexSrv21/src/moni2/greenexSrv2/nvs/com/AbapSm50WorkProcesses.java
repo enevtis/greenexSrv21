@@ -14,7 +14,7 @@ import obj.greenexSrv2.nvs.com.PhisObjProperties;
 import obj.greenexSrv2.nvs.com.SqlReturn;
 
 public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable {
-
+	public String currentNow = "";
 	public AbapSm50WorkProcesses(globalData gData, Map<String, String> params) {
 		super(gData, params);
 	}
@@ -40,8 +40,11 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 	protected void doCheck() {
 		String message = "";
 		List<remoteSystem> db_systems = readABAP_systemsListForCheck();
-		gData.saveToLog("found " + db_systems.size() + " systems to check.", params.get("job_name"), false);
+		gData.truncateLog(params.get("job_name"));
+		gData.saveToLog("found " + db_systems.size() + " systems to check.", params.get("job_name"));
 
+		currentNow = gData.nowForSQL();
+		
 		for (remoteSystem s : db_systems) {
 			message = s.params.get("short") + " " + s.params.get("ip") + " " + s.params.get("sid") + " "
 					+ s.params.get("sysnr");
@@ -82,7 +85,6 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 	
 			if(wpListInsert.size() > 0) {
 				
-				gData.sqlReq.saveResult("delete from monitor_abap_wp where object_guid='" + s.params.get("guid") + "'");
 				gData.sqlReq.saveResult(wpListInsert);
 			
 			}
@@ -133,7 +135,8 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 				SQL += "'" + rec.get("WP_REPORT") + "',";
 				SQL += "'" + rec.get("WP_ACTION") + "',";
 				SQL += "'" + rec.get("WP_TABLE") + "',";
-				SQL += "now()";
+//				SQL += "now()";
+				SQL += "'" + currentNow + "'";
 				SQL += ")";
 
 				wpList.add(SQL);
@@ -157,7 +160,8 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 		SQL_result += "`result_text`,`is_error`) values (";
 		SQL_result += "'" + s.params.get("guid") + "',";
 		SQL_result += "" + jobParams.get("job_number") + ",";
-		SQL_result += "now(),";
+//		SQL_result += "now(),";
+		SQL_result += "'" +currentNow +"',";
 		SQL_result += "" + s.params.get("result") + ",";
 		SQL_result += "'" + s.params.get("message") + "',";
 		SQL_result += "''";

@@ -20,14 +20,9 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 	@Override
 	public void run() {
 
-		gData.sqlReq.saveResult("update monitor_schedule set running='X' where id=" + params.get("job_id"));
-
+		setRunningFlag_shedule();
 		doCheck();
-
-		gData.sqlReq.saveResult(
-				"update monitor_schedule set running=' ',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
-						+ params.get("job_id"));
-
+		reSetRunningFlag_shedule();
 	}
 
 	protected void doCheck() {
@@ -39,7 +34,8 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 
 		List<remoteSystem> db_systems = readDB_systemsListForCheck();
 
-			gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"), true);
+		gData.truncateLog(params.get("job_name"));	
+		gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"));
 
 
 
@@ -48,7 +44,7 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 			message = s.params.get("guid") + ": ip=" + s.params.get("ip") + " sid=" + s.params.get("sid") + " db_type="
 					+ s.params.get("db_type");
 
-			gData.saveToLog(message, params.get("job_name"), true);
+			gData.saveToLog(message, params.get("job_name"));
 
 			ObjectParametersReader parReader = new ObjectParametersReader(gData);
 			
@@ -68,7 +64,7 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 				gData.logger.info(message);
 				gData.logger.info(remoteSQL);
 				if (gData.debugMode)
-					gData.saveToLog(message, params.get("job_name"), true);
+					gData.saveToLog(message, params.get("job_name"));
 				return;
 
 			}
@@ -77,11 +73,11 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 			String SQL = "select value_limit from monitor_links where monitor_number=" + params.get("job_number")
 					+ " and object_guid='" + s.params.get("guid") + "'";
 	
-			gData.saveToLog(SQL, params.get("job_name"), true);
+			gData.saveToLog(SQL, params.get("job_name"));
 			
 			String SAPSR3TablespaceLimitGb = gData.sqlReq.readOneValue(SQL);
 			
-			gData.saveToLog(SAPSR3TablespaceLimitGb, params.get("job_name"), true);
+			gData.saveToLog(SAPSR3TablespaceLimitGb, params.get("job_name"));
 			
 			String paramTemplate = "!LIMIT_GB!";
 
@@ -95,14 +91,14 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 
 			} else {
 
-				gData.saveToLog("param " + paramName + " not found! ", params.get("job_name"), true);
+				gData.saveToLog("param " + paramName + " not found! ", params.get("job_name"));
 				return;
 
 			}		
 			
 			
 			if (gData.debugMode)
-				gData.saveToLog(remoteSQL, params.get("job_name"), true);			
+				gData.saveToLog(remoteSQL, params.get("job_name"));			
 			
 
 			String SQL_result = "";
@@ -144,7 +140,7 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 			}
 
 			if (gData.debugMode)
-				gData.saveToLog(message, params.get("job_name"), true);
+				gData.saveToLog(message, params.get("job_name"));
 
 			gData.sqlReq.saveResult(SQL_result);
 			gData.sqlReq.saveResult(sqlOraTbs);
@@ -193,18 +189,18 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 				sqlOraTbs.add(line);
 				
 				if (gData.debugMode)
-					gData.saveToLog(line, params.get("job_name"), true);
+					gData.saveToLog(line, params.get("job_name"));
 
 			}
 
-			gData.saveToLog("OK", params.get("job_name"), true);
+			gData.saveToLog("OK", params.get("job_name"));
 			
 			s.params.put("result", "" + alert_count);
 			s.params.put("message", message);
 
 		} else {
 			
-			gData.saveToLog("ERROR", params.get("job_name"), true);
+			gData.saveToLog("ERROR", params.get("job_name"));
 			
 			out = false;
 			s.params.put("result", "-1");
@@ -213,7 +209,7 @@ public class OracleFreeSpaceCheck extends BatchJobTemplate implements Runnable {
 
 		if (gData.debugMode)
 			gData.saveToLog("Return from Oracle = " + s.params.get("result") + " " + s.params.get("message"),
-					params.get("job_name"), true);
+					params.get("job_name"));
 
 		return out;
 	}

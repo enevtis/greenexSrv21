@@ -51,7 +51,8 @@ public class SshSingleResult extends BatchJobTemplate implements Runnable {
 		
 		List<remoteSystem> db_systems = readServersListForCheck(params.get("job_number"));
 
-		if (gData.debugMode) gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"),false);
+		gData.truncateLog(params.get("job_name"));
+		gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"));
 		
 		
 		for (remoteSystem s : db_systems) {

@@ -35,6 +35,8 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 	}
 	private void analyze() {
 
+		gData.truncateLog(params.get("job_name"));
+
 		checkNewAlerts();
 		sendNewProblemLetters();
 		fixOldProblems();
@@ -49,14 +51,14 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 		String SQL = readFrom_sql_text(this.getClass().getSimpleName(),"fixed_problems");
 		
 		SQL = SQL.replace("!LIMIT_FREE_PERCENT!",gData.commonParams.get("OracleTablespaceFreeLimitPercent"));
-		gData.saveToLog(SQL, this.getClass().getSimpleName(), false);
+		gData.saveToLog(SQL, this.getClass().getSimpleName());
 		
 		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
 		for (Map<String, String> rec : records) {
 
 			if (rec.get("action").contains("recovery")) {
 				
-				gData.saveToLog(rec.get("action") + " " + rec.get("description") + " " + rec.get("short"), this.getClass().getSimpleName(), true);
+				gData.saveToLog(rec.get("action") + " " + rec.get("description") + " " + rec.get("short"), this.getClass().getSimpleName());
 				
 				String[] newValues = rec.get("action").split("_");
 
@@ -93,11 +95,11 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 		
 		SQL = SQL.replace("!LIMIT_FREE_PERCENT!",gData.commonParams.get("OracleTablespaceFreeLimitPercent"));
 	
-		if (gData.debugMode) gData.saveToLog(SQL, this.getClass().getSimpleName(), false); 
+		if (gData.debugMode) gData.saveToLog(SQL, this.getClass().getSimpleName()); 
 
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
-		gData.saveToLog(SQL, this.getClass().getSimpleName(), false);
+		gData.saveToLog(SQL, this.getClass().getSimpleName());
 		
 		
 				for (Map<String, String> rec : records_list) {
@@ -228,7 +230,7 @@ public void sendNewProblemLetters() {
 			recepientsAll += s + ";";
 		}
 		
-		if (gData.debugMode) gData.saveToLog("SEND LETTER " + subject + " " + bodyLetter, this.getClass().getSimpleName(), true);
+		if (gData.debugMode) gData.saveToLog("SEND LETTER " + subject + " " + bodyLetter, this.getClass().getSimpleName());
 		
 
 		if (gData.commonParams.containsKey("mailSending")) {
@@ -236,7 +238,7 @@ public void sendNewProblemLetters() {
 
 				me.sendOneLetter(recepientsAll, subject, bodyLetter);
 				
-				gData.saveToLog("SEND LETTER " + subject + " " + bodyLetter, this.getClass().getSimpleName(), true);
+				gData.saveToLog("SEND LETTER " + subject + " " + bodyLetter, this.getClass().getSimpleName());
 				
 
 			} else {

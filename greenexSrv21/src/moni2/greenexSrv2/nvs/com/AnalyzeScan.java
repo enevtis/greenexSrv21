@@ -39,6 +39,8 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 
 	private void analyze() {
 
+		gData.truncateLog(params.get("job_name"));
+	
 		checkNewAlerts();
 		checkStatusOldAlerts();
 		sendLetters();
@@ -134,6 +136,8 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 						bodyLetter += rec.get("job_descr") + " ";
 						bodyLetter += "превышение : " + rec.get("result_number") + " ";
 						bodyLetter += "лимит " + rec.get("value_limit") + " ";
+						bodyLetter += "<br> <i>" + rec.get("description") + "</i> ";
+						
 						String updSQL = "update `problems` set `is_mailed`= 'X',  mailed=NOW()";
 						updSQL += " where guid='" + rec.get("guid") + "'";
 
@@ -234,18 +238,20 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 						if (!checkIfAlertAlreadyExists(rec.get("object_guid"), rec.get("monitor_number"),
 								rec.get("details"))) {
 
+							String resultText = rec.get("result_text") == null ? "": rec.get("result_text");
 							String insSQL = "";
 
 							insSQL += "insert into `problems` (";
 							insSQL += "`guid`,`object_guid`,`monitor_number`,`result_number`,";
-							insSQL += "`value_limit`,`last_check_date`";
+							insSQL += "`value_limit`,`last_check_date`,`description`";
 							insSQL += ") values (";
 							insSQL += "'" + gData.getRandomUUID() + "',";
 							insSQL += "'" + rec.get("object_guid") + "',";
 							insSQL += "" + rec.get("monitor_number") + ",";
 							insSQL += "" + rec.get("result_number") + ",";
 							insSQL += "" + rec.get("value_limit") + ",";
-							insSQL += "'" + rec.get("last_check_date") + "'";
+							insSQL += "'" + rec.get("last_check_date") + "',";
+							insSQL += "'" + resultText  + "'";
 							insSQL += ")";
 
 							gData.sqlReq.saveResult(insSQL);

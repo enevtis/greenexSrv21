@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.MSEcxchange;
+import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
 
 public class RegularReport extends BatchJobTemplate implements Runnable {
@@ -80,7 +81,7 @@ public class RegularReport extends BatchJobTemplate implements Runnable {
 		repTxt += "<th>Параметр</th>";		
 		repTxt += "<th>Лимит</th>";
 		repTxt += "<th>Время возникновения</th>";
-		repTxt += "<th>Прошло часов</th>";
+		repTxt += "<th>Прошло времени</th>";
 
 		repTxt += "</tr>";
 		repTxt += "</thead>";
@@ -96,8 +97,12 @@ public class RegularReport extends BatchJobTemplate implements Runnable {
 			repTxt += "<td>" + rec.get("result_number") + "</td>";
 			repTxt += "<td>" + rec.get("value_limit") + "</td>";
 			repTxt += "<td>" + rec.get("created") + "</td>";
-			repTxt += "<td>" + rec.get("past_hours") + "</td>";
+//			repTxt += "<td>" + rec.get("past_hours") + "</td>";
 
+			int pastHours = Integer.valueOf(rec.get("past_hours"));
+			
+			repTxt += "<td>" + Utils.timeConvert(pastHours * 60) + "</td>";			
+			
 			repTxt += "</tr>";
 
 		}

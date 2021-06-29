@@ -34,7 +34,9 @@ public class AbapSt22Dumps extends BatchJobTemplate implements Runnable {
 		gData.sqlReq.saveResult("update monitor_schedule set running='X' where id=" + params.get("job_id"));
 
 		List<remoteSystem> db_systems = readABAP_systemsListForCheck();
-		gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"), false);
+		
+		gData.truncateLog(params.get("job_name"));
+		gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"));
 
 		for (remoteSystem s : db_systems) {
 			message = s.params.get("short") + " " + s.params.get("ip") + " " + s.params.get("sid") + " "

@@ -42,8 +42,6 @@ public class SapHanaSingleResult extends BatchJobTemplate implements Runnable {
 
 		String message ="",filter = "";
 		
-		gData.logger.info("*** <p style='color:blue;'>Start " + params.get("job_name") + "</p>");
-//		gData.sqlReq.saveResult("update monitor_schedule set active=' ' where id=" + params.get("job_id"));
 		
 		filter = "sap_hana";
 		String remoteSQL = read_from_sql_remote_check(this.getClass().getSimpleName(),params.get("job_name"),filter);
@@ -58,11 +56,10 @@ public class SapHanaSingleResult extends BatchJobTemplate implements Runnable {
 		
 		
 		
-		
-		if(gData.debugMode) gData.logger.info(remoteSQL);
-		
 		List<remoteSystem> db_systems = readDB_systemsListForCheck();
-		if (gData.debugMode) gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"),false);
+		
+		gData.truncateLog(params.get("job_name"));
+		gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"));
 		
 		
 		for(remoteSystem s: db_systems) {
@@ -112,12 +109,10 @@ public class SapHanaSingleResult extends BatchJobTemplate implements Runnable {
 
 
 		
-			if (gData.debugMode) gData.saveToLog(message, params.get("job_name"));
+			gData.saveToLog(message, params.get("job_name"));
 			gData.sqlReq.saveResult(SQL_result);		
 		}
 
-		gData.logger.info("*** <p style='color:blue;'>End " + params.get("job_name") + "</p>");
-//		gData.sqlReq.saveResult("update monitor_schedule set active='X',last_analyze=now(),checks_analyze=checks_analyze+1 where id=" + params.get("job_id"));
 		
 	}
 	

@@ -52,8 +52,9 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 
 		List<String> sqlList = new ArrayList<String>();
 		String SQL_result = "";
-		
-		if (gData.debugMode) gData.saveToLog("found " + servers.size() + " systems to start.", params.get("job_name"),false);
+
+		gData.truncateLog(params.get("job_name"));
+		gData.saveToLog("found " + servers.size() + " systems to start.", params.get("job_name"));
 		
 		for (remoteSystem s : servers) {
 
@@ -66,13 +67,13 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 			  PhisObjProperties pr = parReader.getParametersPhysObject(s.params.get("guid"));	
 
 			  ConnectionData conData = readConnectionParameters(pr);
-			  if (gData.debugMode) gData.saveToLog(conData.ip + " " + conData.user ,params.get("job_name"));
+			  gData.saveToLog(conData.ip + " " + conData.user ,params.get("job_name"));
 			  
 			  
 			  String remoteSshText = readFrom_ssh_remote_check(s.params.get("os_type"));
 			  
-			  if (gData.debugMode) gData.saveToLog("GUID=" +s.params.get("guid") + " IP=" + s.params.get("ip") + " remoteSshText= " + remoteSshText, params.get("job_name"));
-			  if (gData.debugMode) gData.saveToLog(s.params.get("guid") + " " + s.params.get("ip") + "remoteSshText= " + remoteSshText, params.get("job_name"));
+			  gData.saveToLog("GUID=" +s.params.get("guid") + " IP=" + s.params.get("ip") + " remoteSshText= " + remoteSshText, params.get("job_name"));
+			  gData.saveToLog(s.params.get("guid") + " " + s.params.get("ip") + "remoteSshText= " + remoteSshText, params.get("job_name"));
 			  
 			  
 			  
@@ -134,7 +135,7 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 			  
 			  counter ++;
 			  
-			  if (gData.debugMode) gData.saveToLog(s.params.get("guid") + " " + s.params.get("ip") + "SQL_result= " + SQL_result, params.get("job_name"));
+			  gData.saveToLog(s.params.get("guid") + " " + s.params.get("ip") + "SQL_result= " + SQL_result, params.get("job_name"));
 			  gData.sqlReq.saveResult(sqlList);
 			  
 			 
@@ -147,7 +148,7 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 		
 		String message = params.get("job_name") + " finished succesfully. Quantity links =" + kvo_links + " counter=" + counter;
 		
-		if (gData.debugMode) gData.saveToLog(message, params.get("job_name"));
+		gData.saveToLog(message, params.get("job_name"));
 
 	}
 	protected String readFrom_ssh_remote_check(String os_type) {

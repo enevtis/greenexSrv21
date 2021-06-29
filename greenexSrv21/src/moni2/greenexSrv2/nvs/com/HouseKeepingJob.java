@@ -85,7 +85,9 @@ public class HouseKeepingJob extends BatchJobTemplate implements Runnable{
 		SQL += "WHERE is_fixed='X' AND TIMESTAMPDIFF(HOUR,fixed,NOW()) > 24" ;
 		sql_list.add(SQL);		
 		
-	
+		SQL = "delete from monitor_abap_wp where " ;
+		SQL += "DATEDIFF(CURDATE(),check_date) > ( select max(keep_days) from monitor_schedule where number=303)" ;
+		sql_list.add(SQL);		
 		
 		
 		
