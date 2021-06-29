@@ -51,11 +51,13 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 		String SQL = readFrom_sql_text(this.getClass().getSimpleName(),"fixed_problems");
 		
 		SQL = SQL.replace("!LIMIT_FREE_PERCENT!",gData.commonParams.get("OracleTablespaceFreeLimitPercent"));
-		gData.saveToLog(SQL, this.getClass().getSimpleName());
+		gData.saveToLog(SQL, params.get("job_name"));
 		
 		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
 		for (Map<String, String> rec : records) {
 
+			
+			
 			if (rec.get("action").contains("recovery")) {
 				
 				gData.saveToLog(rec.get("action") + " " + rec.get("description") + " " + rec.get("short"), this.getClass().getSimpleName());
@@ -72,12 +74,8 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 				SQL1 += "description='limit=" + newValues[2] + "'";						
 				SQL1 += " where id=" + rec.get("id");					
 
+				gData.saveToLog(SQL1, params.get("job_name"));
 				gData.sqlReq.saveResult(SQL1);
-				
-				
-				
-				
-				
 				
 			}
 		}
@@ -95,15 +93,27 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 		
 		SQL = SQL.replace("!LIMIT_FREE_PERCENT!",gData.commonParams.get("OracleTablespaceFreeLimitPercent"));
 	
-		if (gData.debugMode) gData.saveToLog(SQL, this.getClass().getSimpleName()); 
+		gData.saveToLog(SQL, params.get("job_name")); 
 
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
-		gData.saveToLog(SQL, this.getClass().getSimpleName());
+		gData.saveToLog(SQL, params.get("job_name"));
 		
 		
 				for (Map<String, String> rec : records_list) {
 
+					String traceMsg = "";
+					traceMsg = rec.get("object_guid") + " ";
+					traceMsg = rec.get("short") + " ";
+					traceMsg += rec.get("tablespace_name") + " ";
+					traceMsg += "free%" +rec.get("pct_free") + " ";
+					traceMsg += "max_free Gb" +rec.get("max_free") + " ";
+					traceMsg += "limit: " +rec.get("min_free") + " ";
+					traceMsg += "action:" + rec.get("is_alert");
+					
+					gData.saveToLog(traceMsg, params.get("job_name"));
+					
+					
 					if (rec.get("is_alert").contains("alert")) {
 						
 						if (rec.get("is_alert").contains("percent")) {
@@ -116,7 +126,7 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 							
 
 							result_number = rec.get("max_free");
-							value_limit = rec.get("min_free");;
+							value_limit = rec.get("min_free");
 							message = "free space " + result_number + " GB of tablespace is less than limit " + value_limit;
 						}
 
@@ -150,13 +160,17 @@ public class AnalyzeScanOracleTs extends BatchJobTemplate implements Runnable{
 							insSQL += "" + value_limit ;
 							insSQL += ")";
 
+							gData.saveToLog(insSQL, params.get("job_name"));
 							gData.sqlReq.saveResult(insSQL);
 
 						}
 				
 				}
 
-		}
+		
+				
+				
+				}
 		
 
 		
@@ -230,7 +244,7 @@ public void sendNewProblemLetters() {
 			recepientsAll += s + ";";
 		}
 		
-		if (gData.debugMode) gData.saveToLog("SEND LETTER " + subject + " " + bodyLetter, this.getClass().getSimpleName());
+		gData.saveToLog("SEND LETTER " + subject + " " + bodyLetter, this.getClass().getSimpleName());
 		
 
 		if (gData.commonParams.containsKey("mailSending")) {

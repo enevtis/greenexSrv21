@@ -62,7 +62,9 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 			
 				updSql.add("update monitor_schedule set running = ' ', "
 						+ "running_errors = running_errors+1  where id=" + rec.get("id"));
-				gData.logger.info(rec.get("job_name") + " has been reseted after running " + rec.get("past_min"));
+				String message = rec.get("job_name") + " has been reseted after running " + rec.get("past_min");
+
+				gData.saveToLog(message,params.get("job_name"));
 				
 			}
 		}
