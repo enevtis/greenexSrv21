@@ -100,9 +100,6 @@ public class GreenexSrv2Main {
 				srv.gData.executor.scheduleAtFixedRate(new JobScan(srv.gData), 0,1, TimeUnit.MINUTES);
 				srv.gData.logger.info("systemScanning started...");
 				
-				srv.gData.executor.scheduleAtFixedRate(new TechServiceScan(srv.gData), 0, 60, TimeUnit.SECONDS);
-				srv.gData.logger.info("TechServiceScan started...");
-				
 
 			} else {
 				srv.gData.logger.info("WARNING: systemScanning is disallowed...");
@@ -111,19 +108,8 @@ public class GreenexSrv2Main {
 		}
 
 		
-/*		
-		srv.gData.executor.scheduleAtFixedRate(new AnalyzeScan(srv.gData), 0, 60, TimeUnit.SECONDS);
-
-		srv.gData.executor.scheduleAtFixedRate(new AnalyzeScanDisks(srv.gData), 30, 60, TimeUnit.SECONDS);
-		
-		srv.gData.executor.scheduleAtFixedRate(new AnalyzeScanOracleTs(srv.gData), 7, 60, TimeUnit.SECONDS);
-		
-		srv.gData.executor.scheduleAtFixedRate(new RegularReport(srv.gData), 3, 60, TimeUnit.SECONDS);
-		
-		srv.gData.executor.scheduleAtFixedRate(new SelfCheck(srv.gData), 5, 60, TimeUnit.SECONDS);
-		
-		srv.gData.service.scheduleAtFixedRate(new HouseKeepingJob(srv.gData), 1, 60, TimeUnit.MINUTES);
-*/		
+		srv.gData.executor.scheduleAtFixedRate(new TechServiceScan(srv.gData), 0, 60, TimeUnit.SECONDS);
+		srv.gData.logger.info("TechServiceScan started...");
 		srv.gData.logger.info("All services Greenex monitor srarted...");
 
 		

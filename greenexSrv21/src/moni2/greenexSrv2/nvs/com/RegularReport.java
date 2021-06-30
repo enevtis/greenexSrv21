@@ -97,7 +97,6 @@ public class RegularReport extends BatchJobTemplate implements Runnable {
 			repTxt += "<td>" + rec.get("result_number") + "</td>";
 			repTxt += "<td>" + rec.get("value_limit") + "</td>";
 			repTxt += "<td>" + rec.get("created") + "</td>";
-//			repTxt += "<td>" + rec.get("past_hours") + "</td>";
 
 			int pastHours = Integer.valueOf(rec.get("past_hours"));
 			
@@ -127,7 +126,7 @@ public class RegularReport extends BatchJobTemplate implements Runnable {
 		repTxt += "<th>Имя объекта</th>";
 		repTxt += "<th>Проект</th>";
 		repTxt += "<th>Время последней проверки</th>";
-		repTxt += "<th>Прошло минут</th>";
+		repTxt += "<th>Прошло времени</th>";
 
 		repTxt += "</tr>";
 		repTxt += "</thead>";
@@ -144,8 +143,13 @@ public class RegularReport extends BatchJobTemplate implements Runnable {
 			repTxt += "<td>" + rec.get("link") + "</td>";
 			repTxt += "<td>" + rec.get("short") + "</td>";
 			repTxt += "<td>" + rec.get("last_check_date") + "</td>";
-			repTxt += "<td>" + rec.get("past_min") + "</td>";
+//			repTxt += "<td>" + rec.get("past_min") + "</td>";
 
+			int pastMinuts = Integer.valueOf(rec.get("past_min"));
+			
+			repTxt += "<td>" + Utils.timeConvert(pastMinuts) + "</td>";			
+
+			
 			repTxt += "</tr>";
 			
 			rowCounter++;

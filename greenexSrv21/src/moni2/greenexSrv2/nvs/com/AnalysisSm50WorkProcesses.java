@@ -3,14 +3,18 @@ package moni2.greenexSrv2.nvs.com;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import greenexSrv2.nvs.com.MSEcxchange;
+import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
 
 public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runnable {
 
 	public String currMonitorNumber = "303";
+	public Map<String, String> appservers = new HashMap();
 
 	public AnalysisSm50WorkProcesses(globalData gData, Map<String, String> params) {
 		super(gData, params);
@@ -39,14 +43,13 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 	private void analyze() {
 
 		checkUsedPercentWorkProcesses();
-
-//		checkNewAlerts();
-//		checkStatusOldAlerts();
-//		sendLetters();
+		sendLetters();
 
 	}
 
 	private void checkUsedPercentWorkProcesses() {
+
+		appservers.clear();
 
 		String maxUsedPercent = gData.commonParams.containsKey("AbapWorkProcessUsedPercentLimit")
 				? gData.commonParams.get("AbapWorkProcessUsedPercentLimit")
@@ -62,7 +65,7 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
 
 		String insSQL = "";
-		
+
 		for (Map<String, String> rec : records) {
 
 			counter++;
@@ -83,7 +86,8 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 
 					insSQL = "insert into `problems` (";
 					insSQL += "`guid`,`object_guid`,`details`,`monitor_number`,`result_number`,";
-					insSQL += "`value_limit`,`last_check_date`";
+					insSQL += "`value_limit`,`last_check_date`,";
+					insSQL += "`is_mailed`,`mailed`,`is_last_mailing`,`last_mailing`";
 					insSQL += ") values (";
 					insSQL += "'" + gData.getRandomUUID() + "',";
 					insSQL += "'" + rec.get("object_guid") + "',";
@@ -91,12 +95,16 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 					insSQL += "" + currMonitorNumber + ",";
 					insSQL += "" + rec.get("used_percent") + ",";
 					insSQL += "" + maxUsedPercent + ",";
-					insSQL += "'" + rec.get("last_check_date") + "'";
+					insSQL += "'" + rec.get("last_check_date") + "',";
+					insSQL += "'X',now(),'X',now()";
 					insSQL += ")";
 
 					gData.saveToLog(insSQL, params.get("job_name"));
 
 					newAlertsListSql.add(insSQL);
+
+					appservers.put(rec.get("object_guid") + ":" + rec.get("app_server"),
+							details + " used :" + rec.get("used_percent") + "% limit:" + maxUsedPercent);
 
 				}
 
@@ -107,75 +115,152 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 
 	}
 
-	private void checkNewAlerts() {
-
-		String SQL = "SELECT object_guid,app_server FROM monitor_abap_wp GROUP BY object_guid,app_server";
-		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
-		List<String> newAlertsListSql = new ArrayList<String>();
-
-		for (Map<String, String> rec : records) {
-			checkOneSystem(rec.get("object_guid"), rec.get("app_server"), newAlertsListSql);
-		}
-		gData.sqlReq.saveResult(newAlertsListSql);
-
-	}
-
-	private void checkOneSystem(String objectGuid, String appServer, List<String> newAlertsListSql) {
-
-		String SQL = readFrom_sql_text(this.getClass().getSimpleName(), "check_free_wp");
-
-		String freeLimitAbapWpPercent = gData.commonParams.containsKey("AbapWorkProcessFreeLimitPercent")
-				? gData.commonParams.get("AbapWorkProcessFreeLimitPercent")
-				: "50";
-
-		SQL = SQL.replace("!LIMIT_FREE_WP_PERCENT!", freeLimitAbapWpPercent);
-		SQL = SQL.replace("!OBJECT_GUID!", objectGuid);
-		SQL = SQL.replace("!APP_SERVER!", appServer);
-
-		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
-
-		gData.saveToLog(SQL, params.get("job_name"));
-
-		for (Map<String, String> rec : records) {
-			String message = "";
-			message += objectGuid + " " + appServer + " " + rec.get("wp_typ") + " " + rec.get("total_wp") + " "
-					+ rec.get("free_wp") + " " + rec.get("free_percent") + " ";
-			gData.saveToLog(message, params.get("job_name"));
-
-			if (rec.get("action").equals("alert")) {
-				String insSQL = "";
-
-				String details = appServer + "_" + rec.get("wp_typ");
-
-				insSQL += "insert into `problems` (";
-				insSQL += "`guid`,`object_guid`,`details`,`monitor_number`,`result_number`,";
-				insSQL += "`value_limit`,`last_check_date`";
-				insSQL += ") values (";
-				insSQL += "'" + gData.getRandomUUID() + "',";
-				insSQL += "'" + rec.get("object_guid") + "',";
-				insSQL += "'" + details + "',";
-				insSQL += "" + params.get("monitor_number") + ",";
-				insSQL += "" + rec.get("free_percent") + ",";
-				insSQL += "" + freeLimitAbapWpPercent + ",";
-				insSQL += "'" + rec.get("last_check_date") + "'";
-				insSQL += ")";
-
-				gData.saveToLog(insSQL, params.get("job_name"));
-
-				newAlertsListSql.add(insSQL);
-
-			}
-
-		}
-
-	}
-
-	private void checkStatusOldAlerts() {
-
-	}
 
 	private void sendLetters() {
+		if (appservers.size() < 1)
+			return;
+		
+		gData.saveToLog("servers for letter=" + appservers.size(), params.get("job_name"));
+		
+		List<String> object_guids = new ArrayList<>();
+		String SQL = "";
+		String body = "";
+		String commonSubjectLetter = "Problem in ABAP:";
+		String port = gData.commonParams.get("webServicePort");
+		String ip = gData.getOwnIp();
+		
+		body += "<STYLE>" + getTableStyle() + "</STYLE>";
+		
+		
+		for (Map.Entry<String, String> entry : appservers.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			String[] parts = key.split(":");
 
+			String objectGuid = parts[0];
+			String appserver = (parts.length==2) ? parts[1]:"";
+			
+			commonSubjectLetter += appserver + " ";		//заголовок письма
+			
+			object_guids.add(objectGuid);
+
+			SQL = "SELECT * ,TIMESTAMPDIFF(MINUTE,check_date,NOW()) AS 'past_minutes' ";
+			SQL += " FROM monitor_abap_wp WHERE check_date = (SELECT MAX(check_date) FROM monitor_abap_wp) ";
+			SQL += " AND object_guid='" + objectGuid + "' AND app_server='" + appserver + "' ";
+			SQL += " ORDER BY wp_index ";
+
+			
+			gData.saveToLog(SQL, params.get("job_name"));
+
+
+			List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
+
+			body += "<p style='color:red;'>" + value + "</p>";
+			String timeString = "";
+			String pastMinutes = "";
+
+
+			body += "<a href='https://" + ip + ":" + port + "/dashboard?guid=";
+			body += objectGuid + "'>";						
+			body += appserver;
+			body += "</a> ";
+
+
+			body += "<table border=1>";
+			body += "<thead>";
+			body += "<tr>";
+			body += "<th>wp_index</th>";
+			body += "<th>wp_typ</th>";
+			body += "<th>wp_pid</th>";			
+			body += "<th>wp_status</th>";			
+			body += "<th>wp_dumps</th>";			
+			body += "<th>wp_mandt</th>";
+			body += "<th>wp_bname</th>";			
+			body += "<th>wp_report</th>";			
+			body += "<th>wp_action</th>";
+			body += "<th>wp_table</th>";			
+			body += "</tr>";			
+			body += "</thead>";			
+
+			body += "<tbody>";				
+						
+			for (Map<String, String> rec : records) {
+				
+				
+				body += "<tr>";
+				body += "<td>" + rec.get("wp_index") + "</td>";
+				body += "<td>" + rec.get("wp_typ") + "</td>";
+				body += "<td>" + rec.get("wp_pid") + "</td>";
+				body += "<td>" + rec.get("wp_status") + "</td>";
+				body += "<td>" + rec.get("wp_dumps") + "</td>";
+				body += "<td>" + rec.get("wp_mandt") + "</td>";
+				body += "<td>" + rec.get("wp_bname") + "</td>";
+				body += "<td>" + rec.get("wp_report") + "</td>";
+				body += "<td>" + rec.get("wp_action") + "</td>";
+				body += "<td>" + rec.get("wp_table") + "</td>";
+				body += "</tr>";
+				
+				timeString = rec.get("check_date");
+				pastMinutes = rec.get("past_minutes");
+				
+				
+	
+			}
+			body += "</tbody>";
+			body += "</table>";
+
+
+			timeString = "<p style='color:black;'>по состоянию на:" + timeString + "</p>";
+			timeString += "<p style='color:black;'>" + Utils.timeConvert(Integer.valueOf(pastMinutes)) + " минут назад.</p>";
+	
+			body +=  timeString ;
+
+
+		}
+
+		gData.saveToLog(body, params.get("job_name"));
+
+			MSEcxchange me = new MSEcxchange(gData);
+
+			List<String> recepientsList = readRecepientsByProjects(object_guids);
+
+			String recepientsAll = "";
+			for (String s : recepientsList) {
+				recepientsAll += s + ";";
+			}
+			
+			
+			gData.saveToLog(">Письмо:" + recepientsAll + " " + commonSubjectLetter + " " + body , params.get("job_name"));
+
+			if (gData.commonParams.containsKey("mailSending")) {
+				if (gData.commonParams.get("mailSending").equals("true")) {
+
+					me.sendOneLetter(recepientsAll, commonSubjectLetter, body);
+
+				} else {
+					gData.logger.info("MailNotificator is disallowed...");
+				}
+			}
+
+	}
+
+	private String getTableStyle() {
+		String out = "";
+
+
+		out += "table {";
+		out += "font-size: 65%; ";
+		out += "font-family: Verdana, Arial, Helvetica, sans-serif; ";
+		out += "border: 1px solid #399; ";
+		out += "border-spacing: 1px 1px; ";
+		out += "}";
+		out += "td {";
+		out += "background: #AAA;";
+		out += "border: 1px solid #333;";
+		out += "padding: 1px; ";
+		out += "}";
+
+		return out;
 	}
 
 }

@@ -15,6 +15,9 @@ import obj.greenexSrv2.nvs.com.SqlReturn;
 
 public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable {
 	public String currentNow = "";
+	public String currMonitorNumber = "303";
+	public List<String> listSm50 = new ArrayList<String>();
+	
 	public AbapSm50WorkProcesses(globalData gData, Map<String, String> params) {
 		super(gData, params);
 	}
@@ -169,4 +172,5 @@ public class AbapSm50WorkProcesses extends BatchJobTemplate implements Runnable 
 
 		gData.sqlReq.saveResult(SQL_result);
 	}
+
 }
