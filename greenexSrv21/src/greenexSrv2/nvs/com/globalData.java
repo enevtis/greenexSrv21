@@ -126,6 +126,7 @@ public class globalData {
 		router.put("/tree_save", pack + "TreeSaveHandler");
 		router.put("/time_line", pack + "TimeLineHandler");
 		router.put("/utils", pack + "UtilsHandler");
+		router.put("/test", pack + "TestHandler");
 	}
 	
 	

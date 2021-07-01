@@ -57,7 +57,6 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 		String SQL = readFrom_sql_text(this.getClass().getSimpleName(), "check_used_percent_wp");
 		SQL = SQL.replace("!MAX_USED_PERCENT!", maxUsedPercent);
 		List<String> newAlertsListSql = new ArrayList<String>();
-//		gData.saveToLog(SQL, params.get("job_name"));
 
 		gData.truncateLog(params.get("job_name"));
 		int counter = 0;
@@ -70,11 +69,11 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 
 			counter++;
 
-			String details = rec.get("short") + "_";
-			details += rec.get("def_ip") + "_";
-			details += rec.get("sysnr") + "_";
-			details += rec.get("app_server") + "_";
-			details += rec.get("wp_typ") + "_";
+			String details = rec.get("short") + "::";
+			details += rec.get("def_ip") + "::";
+			details += rec.get("sysnr") + "::";
+			details += rec.get("app_server") + "::";
+			details += rec.get("wp_typ") ;
 
 			String message = "total:" + rec.get("total_wp") + "-free:" + rec.get("free_wp");
 
@@ -210,7 +209,7 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 			body += "</table>";
 
 
-			timeString = "<p style='color:black;'>по состоянию на:" + timeString + "</p>";
+			timeString = "<p style='color:black;'>по состоянию на: " + timeString + "</p>";
 			timeString += "<p style='color:black;'>" + Utils.timeConvert(Integer.valueOf(pastMinutes)) + " минут назад.</p>";
 	
 			body +=  timeString ;
