@@ -89,7 +89,9 @@ public class HouseKeepingJob extends BatchJobTemplate implements Runnable{
 		SQL += "DATEDIFF(CURDATE(),check_date) > ( select max(keep_days) from monitor_schedule where number=303)" ;
 		sql_list.add(SQL);		
 		
-		
+		SQL = "delete from monitor_idocs where " ;
+		SQL += "DATEDIFF(CURDATE(),check_date) > ( select max(keep_days) from monitor_schedule where number=305)" ;
+		sql_list.add(SQL);			
 		
 		if ( gData.sqlReq.saveResult(sql_list) ) {
 			gData.logger.info("Housekeeping job was executed successfully ");

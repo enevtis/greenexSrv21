@@ -2,10 +2,13 @@ package moni2.greenexSrv2.nvs.com;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
@@ -17,6 +20,9 @@ import obj.greenexSrv2.nvs.com.PhisObjProperties;
 
 public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 
+	public String currMonitorNumber = "305";
+	public String currentNow = "";
+	
 	public AbapIdocStat(globalData gData, Map<String, String> params) {
 		super(gData, params);
 	}
@@ -42,6 +48,7 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 	protected void doCheck() {
 
 		String message = "";
+		currentNow = gData.nowForSQL();
 
 		List<remoteSystem> db_systems = readABAP_systemsListForCheck();
 
@@ -76,8 +83,8 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 			SQL_result += "`check_date`,`result_number`,";
 			SQL_result += "`result_text`,`is_error`) values (";
 			SQL_result += "'" + s.params.get("guid") + "',";
-			SQL_result += "" + params.get("job_number") + ",";
-			SQL_result += "now(),";
+			SQL_result += "" + currMonitorNumber + ",";
+			SQL_result += "'" + currentNow +"',";
 			SQL_result += "" + s.params.get("result") + ",";
 			SQL_result += "'" + s.params.get("message") + "',";
 			SQL_result += "''";
@@ -91,25 +98,27 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 	
 	protected void getIdocStatLastNmonth(Map<String, String> params, int month) {
 		
-		int pastMin = 15; 
-		LocalDateTime cNow = LocalDateTime.now();
+		int pastMonth = 6;
+		List<String> sqlList = new ArrayList();
 		
-		LocalDateTime cFrom = cNow.minusMonths(1);
+		for (int i=1; i < (pastMonth + 1); i++) {
+			doIdocStatRequest(params, (pastMonth - i), sqlList);	
+		}
 		
+		for(String s: sqlList) {
+			
+			gData.saveToLog(s, params.get("job_name"));
+			
+		}
 		
-		
-		String filter = "CREDAT > '20210630' and CREDAT < '20210702'";		
-		
-		
-		
-		
+		gData.sqlReq.saveResult(sqlList);
 	}
 	
 	
 	
 	
 	
-	protected boolean doIdocStatRequest(Map<String, String> params) {
+	protected boolean doIdocStatRequest(Map<String, String> params, int pastMonth, List<String> sqlList) {
 		boolean out = false;
 		String outR3 = "";
 		
@@ -117,31 +126,28 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 		SAPR3 sr3 = new SAPR3(gData, params);
 		
 		
-		int pastMin = 15; 
-		
-		
-		
-		LocalDateTime cNow = LocalDateTime.now();
-		LocalDateTime cFrom = cNow.minusMinutes(pastMin);
-
 		DateTimeFormatter formatterForDate = DateTimeFormatter.ofPattern("yyyyMMdd");
-		DateTimeFormatter formatterForUzeit = DateTimeFormatter.ofPattern("HHmmss");
-
-		String strDate = cNow.format(formatterForDate);
-		String strTimeFrom = cFrom.format(formatterForUzeit);
-		String strTimeTo = cNow.format(formatterForUzeit);
-
-
-		String filter = "CREDAT > '20210630' and CREDAT < '20210702'";
 		
-		outR3 = sr3.readTable("EDIDC", "STATUS,SNDPRN,MESTYP", filter, ";");
+		LocalDate cNow = LocalDate.now().minusMonths(pastMonth);
+		LocalDate firstDay = cNow.withDayOfMonth(1);
+		LocalDate lastDay = cNow.withDayOfMonth(cNow.lengthOfMonth());	
+		
+		String filter = "CREDAT GE '" + firstDay.format(formatterForDate) + "'";
+		filter += " AND CREDAT LE '" + lastDay.format(formatterForDate) + "'";
+
+		Locale l = Locale.forLanguageTag("ru");		
+		String strMonthYear = cNow.format(DateTimeFormatter.ofPattern("LLL-yyyy"));
+		int Year = Integer.valueOf(cNow.format(DateTimeFormatter.ofPattern("yyyy")));
+		int Month = Integer.valueOf(cNow.format(DateTimeFormatter.ofPattern("M")));
+		
+		outR3 = sr3.readTable("EDIDC", "STATUS,SNDPRN,RCVPRN,MESTYP", filter, ";");
 		
 		if (outR3.equals("CONNECT_ERROR")) {
 			params.put("result", "-999");
 			params.put("message", "system " + params.get("short") + " " + params.get("sid") + " " + 
 					params.get("sysnr") + " not reached");			
 	
-			gData.logger.info(params.get("message"));
+			gData.saveToLog(params.get("message"), params.get("job_name"));
 			
 			return false;
 		}
@@ -155,8 +161,7 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 		
 		
 		int counter = 0;
-//		String oldValue = "", newValue = "";
-//
+
 		for (int i = 0; i < strFields.length; i++) {
 			
 			String parts[] = strFields[i].split(";");
@@ -164,12 +169,41 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 			
 		}
 
-//			params.put("result", "" + counter);
-//			params.put("message", "");		
+			params.put("result", "" + counter);
+			params.put("message", "ok");		
 		
 		
 		for (Map.Entry<String, Integer> pair: idocs.entrySet()) {
-//            out += "<br>" + "key: " + pair.getKey() + " , value: " + pair.getValue();
+
+			String curKey = pair.getKey();
+			String parts[] = curKey.split(";");
+			
+			
+			String sqlIns = "";
+			sqlIns += "insert into monitor_idocs (";
+			sqlIns += "`object_guid`,";
+			sqlIns += "`year`,";
+			sqlIns += "`month`,";			
+			sqlIns += "`status`,";			
+			sqlIns += "`sender`,";			
+			sqlIns += "`reciever`,";
+			sqlIns += "`idoc_type`,";
+			sqlIns += "`total`,";
+			sqlIns += "`check_date`";			
+			sqlIns += ") values (";			
+			sqlIns += "'" + params.get("guid") + "',";
+			sqlIns += "'" + Year + "',";
+			sqlIns += "'" + Month + "',";
+			sqlIns += "'" + ((parts.length >= 0) ? parts[0].trim() : "-") + "',";			
+			sqlIns += "'" + ((parts.length >= 1) ? parts[1].trim(): "-") + "',";
+			sqlIns += "'" + ((parts.length >= 2) ? parts[2].trim(): "-") + "',";
+			sqlIns += "'" + ((parts.length >= 3) ? parts[3].trim(): "-") + "',";
+			sqlIns += "" + pair.getValue() + "," ;				
+			sqlIns += "'" +currentNow +"'";			
+			sqlIns += ")" ;			
+			
+			sqlList.add(sqlIns);
+
         }
 		
 		

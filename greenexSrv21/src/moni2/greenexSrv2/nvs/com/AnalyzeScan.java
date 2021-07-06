@@ -245,7 +245,7 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 
 							insSQL += "insert into `problems` (";
 							insSQL += "`guid`,`object_guid`,`monitor_number`,`result_number`,";
-							insSQL += "`value_limit`,`last_check_date`,`description`";
+							insSQL += "`value_limit`,`last_check_date`,`description`,`details`";
 							insSQL += ") values (";
 							insSQL += "'" + gData.getRandomUUID() + "',";
 							insSQL += "'" + rec.get("object_guid") + "',";
@@ -253,7 +253,11 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 							insSQL += "" + rec.get("result_number") + ",";
 							insSQL += "" + rec.get("value_limit") + ",";
 							insSQL += "'" + rec.get("last_check_date") + "',";
-							insSQL += "'" + resultText  + "'";
+							insSQL += "'" + resultText  + "',";
+							
+							String details = rec.get("result_text") == null ?  "": rec.get("result_text");
+							
+							insSQL += "'" + details.trim() + "'";
 							insSQL += ")";
 
 							gData.sqlReq.saveResult(insSQL);
