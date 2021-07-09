@@ -1,63 +1,57 @@
-package neserver.nvs.com;
+package moni2.greenexSrv2.nvs.com;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.sap.conn.jco.ext.DestinationDataProvider;
-
+import greenexSrv2.nvs.com.MSEcxchange;
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
-import moni2.greenexSrv2.nvs.com.SAPR3;
-import obj.greenexSrv2.nvs.com.SqlReturn;
-import obj.greenexSrv2.nvs.com.TblField;
 
-public class TestHandler extends HandlerTemplate {
+public class RegularIdocsReport extends BatchJobTemplate implements Runnable {
 
-	private List<TblField> fields = null;
-	private String screenName = "monitor_conn_data";
-	private String tableName = screenName;
-	private String SQL = "";
-	public String caption = "Test page";
-
-	public TestHandler(globalData gData) {
-		super(gData);
-
+	
+	public RegularIdocsReport(globalData gData, Map<String, String> params) {
+		super(gData,params);
 	}
 
-	public String getPage() {
+	@Override
+	public void run() {
 
-		String out = "";
-		String curStyle = "";
+		try {
 
-		int userRight = Utils.determineUserRights(gData, "connect_data", gData.commonParams.get("currentUser"));
-		if (userRight < 1) {
+			setRunningFlag_regular();
 
-			out += "Sorry, you don't have necessary authorisation! Недостаточно полномочий.";
-			out += getEndPage();
+			scanForReport();
 
-			return out;
+			reSetRunningFlag_regular();
+			
+
+		} catch (Exception e) {
+
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.severe(errors.toString());
 		}
 
-		out += getBeginPage();
-		out += strTopPanel(caption);
+	}
+	private void scanForReport() {
 
-		Map<String, String> sparams = new HashMap<String, String>();
-
-		out += getDataForAllSystems(sparams);
-
-		out += getEndPage();
-
-		return out;
+		gData.truncateLog(params.get("job_name"));
+		String jobParameters = params.get("job_parameters");
+		gData.saveToLog("AAA " + jobParameters, params.get("job_name"));
+		String bodyLetter = getDataForAllSystems();
+		sendRegularReportByEmail("Отчет IDOC", bodyLetter);
+		
 	}
 
-	public String getDataForAllSystems(Map<String, String> params) {
+	
+	
+	public String getDataForAllSystems() {
 		String out = "";
 		String SQL = "";
-//		SQL += "SELECT object_guid, MAX(check_date) AS max_check_date, MIN(check_date) AS min_check_date ";
-//		SQL += " FROM monitor_idocs GROUP BY object_guid ";
 		
 		SQL += "SELECT c.short AS 'project', b.short AS 'sap_system', b.sid, b.def_ip, s1.*, ";
 		SQL += "TIMESTAMPDIFF(HOUR,s1.check_date_old,s1.check_date_new) AS 'past_hours' ";
@@ -119,43 +113,42 @@ public class TestHandler extends HandlerTemplate {
 		
 		return out;
 	}
-	
-	
-	
-	
-	
-	public String doTest(Map<String, String> params) {
-		String out = "";
-		out += "<h3> Айдоки</h3>";
+	protected void sendRegularReportByEmail(String subjectLetter, String bodyLetter) {
 
+		MSEcxchange me = new MSEcxchange(gData);
+		
+		List<String> recepientsList = readAdminRecepients(params.get("job_name"));
+		String recepientsAll = "";
+		for (String s : recepientsList) {
+			recepientsAll += s + ";";
+		}
+	
+		gData.saveToLog("Письмо:" + recepientsAll + " " + subjectLetter + " " + bodyLetter + "", params.get("job_name"));
+
+
+		if (gData.commonParams.containsKey("mailSending")) {
+			if (gData.commonParams.get("mailSending").equals("true")) {
+
+				me.sendOneLetter(recepientsAll, subjectLetter, bodyLetter);
+
+			} else {
+				gData.logger.info("MailNotificator is disallowed...");
+			}
+		}
+
+	}	
+
+	protected List<String> readAdminRecepients(String filter) {
+		List<String> out = new ArrayList();
 		String SQL = "";
 
-SQL +="SELECT s1.object_guid ,s1.sid, s1.def_ip, s1.short, monthname(STR_TO_DATE(s1.month,'%m')) AS 'период', s1.year,  ";
-SQL +="FORMAT(s1.total_new,0) AS total_new, FORMAT(s2.total_old,0) AS total_old, ";
-SQL +="FORMAT(s1.total_new - s2.total_old,0) AS 'рост', ";
-SQL +="TIMESTAMPDIFF(HOUR,s2.check_date_old,s1.check_date_new) AS 'за дней' ";
-SQL +="FROM ( ";
-SQL +="SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month, ";
-SQL +="sum(a.total) AS total_new, a.check_date AS check_date_new FROM monitor_idocs a ";
-SQL +="LEFT JOIN app_systems b ON a.object_guid = b.guid ";
-SQL +="WHERE check_date = (SELECT MAX(check_date) FROM monitor_idocs) ";
-SQL +="GROUP BY short, sid, def_ip, YEAR, MONTH ";
-SQL +="ORDER BY short,YEAR,MONTH ) s1 ";
-SQL +="LEFT JOIN  ";
-SQL +="( ";
-SQL +="SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month, "; 
-SQL +="sum(a.total) AS total_old, a.check_date AS check_date_old FROM monitor_idocs a ";
-SQL +="LEFT JOIN app_systems b ON a.object_guid = b.guid ";
-SQL +="WHERE check_date = (SELECT MIN(check_date) FROM monitor_idocs) ";
-SQL +="GROUP BY short, sid, def_ip, YEAR, MONTH ";
-SQL +=") s2 ON s1.object_guid = s2.object_guid AND s1.year = s2.year AND s1.month = s2.month ";
+		SQL = "SELECT * FROM recepients WHERE filter = '" + filter + "'";
+		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
-		out += Utils.getHtmlTablePageFromSqlreturn(gData, SQL);
-
-
-
+		for (Map<String, String> rec : records_list) {
+			out.add(rec.get("email"));
+		}
 
 		return out;
 	}
-
 }

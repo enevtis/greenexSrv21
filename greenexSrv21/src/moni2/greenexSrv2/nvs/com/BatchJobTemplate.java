@@ -393,7 +393,7 @@ public class BatchJobTemplate {
 		List<String> out = new ArrayList();
 		String SQL = "";
 
-		SQL = "SELECT * FROM recepients WHERE project_guid = 'all'";
+		SQL = "SELECT * FROM recepients WHERE project_guid = 'all' and active='X'";
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
 		for (Map<String, String> rec : records_list) {

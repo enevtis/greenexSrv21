@@ -29,6 +29,7 @@ public class SAPR3 {
 	public globalData gData = null;
 	public Map<String, String> params = null;
 	static JCoDestination destination = null;
+	public String destFileName = "";
 
 	public SAPR3(globalData gData, Map<String, String> params) {
 		this.gData = gData;
@@ -39,7 +40,8 @@ public class SAPR3 {
 		String out = "";
 
 		createAbapDestination();
-
+		
+		//removeAbapDistination();
 		try {
 
 			out = rfcReadTable(tableName, fields, filter, delim);
@@ -50,16 +52,40 @@ public class SAPR3 {
 			e.printStackTrace(new PrintWriter(errors));
 			gData.logger.info(errors.toString());
 			out = "CONNECT_ERROR";
+			gData.saveToLog("ERROR : " + params.get("sid") + " \n" + errors.toString() , params.get("job_name"));
 
 		}
 
 		return out;
 	}
+	public SqlReturn readBigTable(String tableName, String fields, String filter, String delim) {
+		SqlReturn out = new SqlReturn();
 
+
+		createAbapDestination();
+		
+		//removeAbapDistination();
+		try {
+
+			out = rfcReadBigTable(tableName, fields, filter, delim);
+
+		} catch (JCoException e) {
+
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.info(errors.toString());
+			out.isOk = false;
+			gData.saveToLog("ERROR : " + params.get("sid") + " \n" + errors.toString() , params.get("job_name"));
+
+		}
+
+		return out;
+	}
 	public String createAbapDestination() {
 
 		String out = "";
-		String dest_name = "currAbap";
+		
+		String dest_name = params.get("job_name");
 
 		Properties connectProperties = new Properties();
 		connectProperties.setProperty(DestinationDataProvider.JCO_ASHOST, params.get("ip"));
@@ -107,11 +133,16 @@ public class SAPR3 {
 		String FUNCTION_NAME = "RFC_READ_TABLE";
 		JCoContext.begin(destination);
 
+		gData.saveToLog("rfcReadTable 1 ", params.get("job_name"));
+		
 		JCoFunction function = destination.getRepository().getFunction(FUNCTION_NAME);
 		if (function == null) {
 			throw new RuntimeException(FUNCTION_NAME + " not found in SAP.");
 		}
 
+		
+		gData.saveToLog("rfcReadTable 2 ", params.get("job_name"));
+		
 		String strFields[] = fields.split("\\s*,\\s*");
 
 		JCoTable inputTableParam = function.getTableParameterList().getTable("FIELDS");
@@ -132,14 +163,26 @@ public class SAPR3 {
 //	    	optionsTableParam.setValue("TEXT", filter"BNAME EQ 'ENEVTIS' OR BNAME EQ 'SAP*'");
 		}
 
+		gData.saveToLog("rfcReadTable 3 ", params.get("job_name"));
+		
 		try {
 			function.execute(destination);
-		} catch (AbapException e) {
-			System.out.println(e.toString());
+		
+			gData.saveToLog("rfcReadTable 4 ", params.get("job_name"));
+			
+		} catch (Exception e) {
+			
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.saveToLog("ERROR : " + params.get("sid") + " \n" + errors.toString() , params.get("job_name"));
+			
 			return "error " + e.getMessage();
 		}
 
 		JCoTable table = function.getTableParameterList().getTable("DATA");
+		
+		gData.saveToLog("rfcReadTable 5 table.getNumRows()= : " + table.getNumRows() , params.get("job_name"));
+		
 		for (int i = 0; i < table.getNumRows(); i++) {
 			table.setRow(i);
 
@@ -147,12 +190,95 @@ public class SAPR3 {
 
 		}
 
+		gData.saveToLog("rfcReadTable 6 table.getNumRows()= : " + table.getNumRows() , params.get("job_name"));
+		
 		JCoContext.end(destination);
 
 		return out;
 
 	}
+	public SqlReturn rfcReadBigTable(String tablename, String fields, String filter, String delim) throws JCoException {
 
+		
+		SqlReturn out = new SqlReturn();
+		out.records = new ArrayList<Map<String, String>>();
+
+		String FUNCTION_NAME = "RFC_READ_TABLE";
+		JCoContext.begin(destination);
+
+		gData.saveToLog("rfcReadTable 1 ", params.get("job_name"));
+		
+		JCoFunction function = destination.getRepository().getFunction(FUNCTION_NAME);
+		if (function == null) {
+			throw new RuntimeException(FUNCTION_NAME + " not found in SAP.");
+		}
+
+		
+		gData.saveToLog("rfcReadTable 2 ", params.get("job_name"));
+		
+		String strFields[] = fields.split("\\s*,\\s*");
+
+		JCoTable inputTableParam = function.getTableParameterList().getTable("FIELDS");
+
+		for (int i = 0; i < strFields.length; i++) {
+			inputTableParam.appendRow();
+			inputTableParam.setValue("FIELDNAME", strFields[i]);
+		}
+
+		function.getImportParameterList().setValue("QUERY_TABLE", tablename);
+
+		function.getImportParameterList().setValue("DELIMITER", delim);
+
+		if (!filter.isEmpty()) {
+			JCoTable optionsTableParam = function.getTableParameterList().getTable("OPTIONS");
+			optionsTableParam.appendRow();
+			optionsTableParam.setValue("TEXT", filter);
+//	    	optionsTableParam.setValue("TEXT", filter"BNAME EQ 'ENEVTIS' OR BNAME EQ 'SAP*'");
+		}
+
+		gData.saveToLog("rfcReadTable 3 ", params.get("job_name"));
+		
+		try {
+			function.execute(destination);
+		
+			gData.saveToLog("rfcReadTable 4 ", params.get("job_name"));
+			
+		} catch (Exception e) {
+			
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.saveToLog("ERROR : " + params.get("sid") + " \n" + errors.toString() , params.get("job_name"));
+			out.isOk = false;
+			return out;
+		}
+
+		JCoTable table = function.getTableParameterList().getTable("DATA");
+		
+		gData.saveToLog("rfcReadTable 5 table.getNumRows()= : " + table.getNumRows() , params.get("job_name"));
+		
+		for (int i = 0; i < table.getNumRows(); i++) {
+			table.setRow(i);
+			Map<String, String> record = new HashMap<String, String>();
+			
+			String line = table.getString("WA");
+			String lineParts[] = line.split(";");
+			
+			for(int y=0; y < lineParts.length; y ++) {
+				record.put(strFields[y], lineParts[y]);	
+			}
+			out.records.add(record);
+
+		}
+
+		gData.saveToLog("7 out.records.size= : " + out.records.size() , params.get("job_name"));
+		
+		gData.saveToLog("rfcReadTable 6 table.getNumRows()= : " + table.getNumRows() , params.get("job_name"));
+		
+		JCoContext.end(destination);
+
+		return out;
+
+	}
 	public String rfcGetSystemInfo() {
 		String out = "";
 
@@ -270,5 +396,7 @@ public class SAPR3 {
 
 		return out;
 	}
-
+	public void	removeAbapDistination() {
+		
+	}
 }

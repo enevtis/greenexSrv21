@@ -5,6 +5,8 @@ import java.util.Map;
 
 import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
+import obj.greenexSrv2.nvs.com.SqlReturn;
+import obj.greenexSrv2.nvs.com.TblField;
 
 public class Utils {
 
@@ -164,11 +166,11 @@ public class Utils {
 
 			return out;
 		}
-		public static String timeConvert(int time) { 
+		public static String timeConvert(int timeMinutes) { 
 			String out = "";
-			int days = time/24/60;
-			int hours = time/60%24;
-			int minutes = time%60;
+			int days = timeMinutes/24/60;
+			int hours = timeMinutes/60%24;
+			int minutes = timeMinutes%60;
 			
 			
 			
@@ -200,5 +202,59 @@ public class Utils {
 		
 			return out;
 		}
-		
+	
+		public static String getTableStyle1() {
+			String out = "";
+
+			out += "table {";
+			out += "font-size: 65%; ";
+			out += "font-family: Verdana, Arial, Helvetica, sans-serif; ";
+			out += "border: 1px solid #399; ";
+			out += "border-spacing: 1px 1px; ";
+			out += "}";
+			out += "td {";
+			out += "background: #DDDDDD;";
+			out += "border: 1px solid #333;";
+			out += "padding: 1px; ";
+			out += "}";
+
+			return out;
+		}		
+		public static String getHtmlTablePageFromSqlreturn(globalData gData, String SQL) {
+			String out = "";
+			
+			SqlReturn rs = gData.sqlReq.getSelect2(SQL);
+			
+			
+			out += "<style>";
+			out += Utils.getTableStyle1();
+			out += "</style>";
+			
+			out += "<table>";
+
+			out += "<thead><tr>";
+
+			for(TblField f : rs.fields) {
+				String caption = f.fieldLabel.isEmpty() ? f.fieldName : f.fieldLabel;
+				out += "<th>" + caption + "</th>";
+			}
+			out += "</tr></thead>";		
+			
+			out += "<tbody>";		
+			for (Map<String, String> rec : rs.records) {
+				out += "<tr>";
+
+				for(TblField f : rs.fields) {
+					out += "<td>" + rec.get(f.fieldName) + "</td>";
+				}
+				
+				out += "</tr>";		
+			}		
+
+			out += "</tbody>";
+			out+="</table>";
+
+		return out;
+	}
+
 }

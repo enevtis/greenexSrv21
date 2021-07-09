@@ -53,7 +53,7 @@ public class AbapSt22Dumps extends BatchJobTemplate implements Runnable {
 			s.params.put("user", conData.user);
 			s.params.put("password", conData.password);
 			s.params.put("clnt", conData.clnt);
-
+			s.params.put("job_name",params.get("job_name"));
 			doAbapRequest(s.params);
 
 			String SQL_result = "";

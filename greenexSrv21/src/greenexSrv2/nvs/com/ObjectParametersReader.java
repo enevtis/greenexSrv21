@@ -125,12 +125,25 @@ public class ObjectParametersReader {
 					descr += out.shortCaption.toUpperCase();
 					
 					
+					
 					switch (out.obj_typ) {
 					case "servers":
 						if(descr.contains("LINUX")) out.OS = "LINUX";
 						if (descr.contains("HPUX") ||  descr.contains("HP-UX")) out.OS = "HPUX";
 						if (descr.contains("AIX"))	out.OS = "AIX";			
-						if (descr.contains("WIND")) out.OS = "WINDOWS";						
+						if (descr.contains("WIND")) out.OS = "WINDOWS";	
+						
+						SQL = "SELECT b.short FROM servers a ";
+						SQL += " LEFT JOIN projects b ON a.project_guid = b.guid";
+						SQL += " WHERE a.guid='" + checkedPhysGuid  + "'";
+	
+						List<Map<String, String>> records2 = gData.sqlReq.getSelect(SQL);
+						
+						for (Map<String, String> rec2 : records2) {
+							
+							out.project = rec2.get("short");
+						}						
+						
 					break;
 					
 					case "db_systems":
@@ -140,11 +153,34 @@ public class ObjectParametersReader {
 						else if (descr.contains("MSSQL"))	out.DB = "MSSQL";			
 						else if (descr.contains("MYSQL")) out.DB = "MYSQL";							
 						
+						SQL = "SELECT b.short FROM db_systems a ";
+						SQL += " LEFT JOIN projects b ON a.project_guid = b.guid";
+						SQL += " WHERE a.guid='" + checkedPhysGuid  + "'";
+
+						records2 = gData.sqlReq.getSelect(SQL);
+						
+						for (Map<String, String> rec2 : records2) {
+							
+							out.project = rec2.get("short");
+						}
+						
+						
 						break;
 					case "app_systems":					
 						if(descr.contains("SAP") && descr.contains("NW")) out.APP = "SAPNW";
 						else if(descr.contains("SAP") && descr.contains("WEAVER")) out.APP = "SAPNW";					
-					
+
+						SQL = "SELECT b.short FROM app_systems a ";
+						SQL += " LEFT JOIN projects b ON a.project_guid = b.guid";
+						SQL += " WHERE a.guid='" + checkedPhysGuid  + "'";
+						
+						records2 = gData.sqlReq.getSelect(SQL);
+						
+						for (Map<String, String> rec2 : records2) {
+							
+							out.project = rec2.get("short");
+						}
+						
 						break;					
 					
 					}

@@ -20,6 +20,7 @@ public class TechServiceScan extends BatchJobTemplate implements Runnable {
 	public void run() {
 		
 		try {
+			
 			scanTechJobs();
 
 		} catch (Exception e) {
@@ -56,7 +57,7 @@ public class TechServiceScan extends BatchJobTemplate implements Runnable {
 
 						params.put("job_name", rec.get("job_name"));
 						params.put("job_id", rec.get("id"));
-						
+						params.put("job_parameters", rec.get("parameters"));
 
 						if (rec.get("action").equals("start")) {
 

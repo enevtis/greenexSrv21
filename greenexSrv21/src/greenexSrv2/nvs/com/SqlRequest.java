@@ -132,6 +132,123 @@ public class SqlRequest {
 		return resordsMap;
 	}
 
+	public SqlReturn getSelect2(String SQL) {
+
+		SqlReturn out = new SqlReturn();
+		
+//		List<Map<String, String>> resordsMap = new ArrayList<Map<String, String>>();
+
+		if (SQL == null || SQL.isEmpty()) {
+			out.isOk = false;
+			return out;
+		}
+		Connection conn = null;
+
+		try {
+
+			conn = DriverManager.getConnection(connectionString, user, password);
+			
+			Statement stmt = conn.createStatement();
+
+			ResultSet rs = stmt.executeQuery(SQL);
+
+			ResultSetMetaData rsmd = rs.getMetaData();
+			int cols = rsmd.getColumnCount();
+
+			String colName = "";
+			String colType = "";
+			String colLabel = "";
+
+			for(int y=1; y <= cols; y++ ) {
+				
+				TblField f = new TblField();
+				f.fieldName = rsmd.getColumnName(y);
+				f.fieldType = rsmd.getColumnTypeName(y);
+				f.fieldLabel = rsmd.getColumnLabel(y);		
+				
+				
+				out.fields.add(f);	
+			}
+						
+			
+			while (rs.next()) {
+
+				Map<String, String> record = new HashMap<String, String>();
+
+				for (int i = 1; i <= cols; i++) {
+
+					colName = rsmd.getColumnName(i);
+					colType = rsmd.getColumnTypeName(i);
+					colLabel = rsmd.getColumnLabel(i);
+					
+					
+
+					if (colType.toUpperCase().contains("CHAR")) {
+
+						record.put(colName, rs.getString(colName));
+
+					} else if (colType.toUpperCase().contains("INT")) {
+
+						record.put(colName, String.valueOf(rs.getInt(colName)));
+
+//		                	this.gData.logger.info("colLabel = " + colLabel + " = " + rs.getInt(colLabel) );                	
+
+					} else if (colType.toUpperCase().contains("FLOAT")) {
+
+						record.put(colName, String.valueOf(rs.getFloat(colName)));
+
+					} else if (colType.toUpperCase().contains("DATETIME")) {
+
+						record.put(colName, String.valueOf(rs.getTimestamp(colName)));
+
+					} else if (colType.toUpperCase().contains("TIMESTAMP")) {
+
+						record.put(colName, String.valueOf(rs.getTimestamp(colName)));
+
+					} else if (colType.toUpperCase().contains("DOUBLE")) {
+
+						record.put(colName, String.valueOf(rs.getFloat(colName)));
+
+					} else if (colType.toUpperCase().contains("DECIMAL")) {
+
+						record.put(colName, String.valueOf(rs.getBigDecimal(colName)));
+						
+					} else {
+						record.put(colName, colType);
+
+						gData.logger.info(colType.toUpperCase() + " is unknown colName=" + colName + " colType="
+								+ colType + " colLabel=" + colLabel);
+
+					}
+
+				}
+
+				out.records.add(record);
+
+			}
+
+//	            System.out.println("resordsMap " + resordsMap.size());
+			conn.close();
+
+		} catch (Exception e) {
+
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.severe(SQL + " \n " + errors.toString());
+
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				StringWriter errors = new StringWriter();
+				e.printStackTrace(new PrintWriter(errors));
+				gData.logger.severe(SQL + " \n " + errors.toString());
+			}
+		}
+
+		return out;
+	}
+	
 	public List<Map<String, String>> getSelect(String dbConnectionString, String dbUser, String dbpassword,
 			String SQL) {
 

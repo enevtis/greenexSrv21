@@ -84,6 +84,7 @@ public class globalData {
 		initFromDataBase();
 //		initChecksPages();
 		initServerPageRouter();
+		this.lang = this.commonParams.get("interfaceLang");
 
 	}
 
@@ -127,32 +128,31 @@ public class globalData {
 		router.put("/time_line", pack + "TimeLineHandler");
 		router.put("/utils", pack + "UtilsHandler");
 		router.put("/test", pack + "TestHandler");
+		router.put("/idocs", pack + "IdocsPageHandler");
+		
 	}
 	
 	
 	
 	
-	public String tr(String word) {
+	public String tr(String key) {
 		String out = "";
 
-		if (this.lang.equals("EN")) {
-			return word;
-		}
-		;
+		String SQL = "select * from msg_text where `key` ='" + key + "'";
+		SQL += " and `lang`='" + this.lang + "'";
+		List<Map<String, String>> records = sqlReq.getSelect(SQL);
+		
+				for (Map<String, String> rec : records) {
+					out = rec.get("trans");
+				}
 
-		String key = word + "_" + this.lang;
+				
+			if (out.isEmpty()) {
+				return key;
+			} else {
+				return out;
+			}
 
-		if (msgText.containsKey(key)) {
-
-			out = msgText.get(key);
-
-		} else {
-
-			out = word;
-
-		}
-
-		return out;
 	}	
 	
 
