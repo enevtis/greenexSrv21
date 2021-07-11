@@ -138,20 +138,22 @@ public class globalData {
 	public String tr(String key) {
 		String out = "";
 
-		String SQL = "select * from msg_text where `key` ='" + key + "'";
-		SQL += " and `lang`='" + this.lang + "'";
-		List<Map<String, String>> records = sqlReq.getSelect(SQL);
+		return key;
 		
-				for (Map<String, String> rec : records) {
-					out = rec.get("trans");
-				}
-
-				
-			if (out.isEmpty()) {
-				return key;
-			} else {
-				return out;
-			}
+//		String SQL = "select * from msg_text where `key` ='" + key + "'";
+//		SQL += " and `lang`='" + this.lang + "'";
+//		List<Map<String, String>> records = sqlReq.getSelect(SQL);
+//		
+//				for (Map<String, String> rec : records) {
+//					out = rec.get("trans");
+//				}
+//
+//				
+//			if (out.isEmpty()) {
+//				return key;
+//			} else {
+//				return out;
+//			}
 
 	}	
 	

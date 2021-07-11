@@ -82,7 +82,7 @@ public class OracleSingleResult extends BatchJobTemplate implements Runnable {
 				SQL_result += "" + params.get("job_number") + ",";
 				SQL_result += "now(),";
 				SQL_result += "" + s.params.get("result") + ",";
-				SQL_result += "'ok',";
+				SQL_result += "'',";
 				SQL_result += "''";
 				SQL_result += ")";
 				message += SQL_result;

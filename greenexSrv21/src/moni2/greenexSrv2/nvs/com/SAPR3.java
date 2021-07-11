@@ -34,12 +34,14 @@ public class SAPR3 {
 	public SAPR3(globalData gData, Map<String, String> params) {
 		this.gData = gData;
 		this.params = params;
+		createAbapDestination();
+		
 	}
 
 	public String readTable(String tableName, String fields, String filter, String delim) {
 		String out = "";
 
-		createAbapDestination();
+//		createAbapDestination();
 		
 		//removeAbapDistination();
 		try {
@@ -62,7 +64,7 @@ public class SAPR3 {
 		SqlReturn out = new SqlReturn();
 
 
-		createAbapDestination();
+//		createAbapDestination();
 		
 		//removeAbapDistination();
 		try {
@@ -85,7 +87,7 @@ public class SAPR3 {
 
 		String out = "";
 		
-		String dest_name = params.get("job_name");
+		String dest_name = params.get("job_name") == null? "abap": params.get("job_name");
 
 		Properties connectProperties = new Properties();
 		connectProperties.setProperty(DestinationDataProvider.JCO_ASHOST, params.get("ip"));
@@ -128,6 +130,8 @@ public class SAPR3 {
 
 	public String rfcReadTable(String tablename, String fields, String filter, String delim) throws JCoException {
 
+//		createAbapDestination();
+		
 		String out = "";
 
 		String FUNCTION_NAME = "RFC_READ_TABLE";
@@ -286,7 +290,7 @@ public class SAPR3 {
 
 		out = FUNCTION_NAME;
 
-		createAbapDestination();
+//		createAbapDestination();
 
 		JCoContext.begin(destination);
 
@@ -337,7 +341,7 @@ public class SAPR3 {
 
 		String FUNCTION_NAME = "TH_WPINFO";
 		
-		createAbapDestination();
+//		createAbapDestination();
 
 		JCoContext.begin(destination);
 

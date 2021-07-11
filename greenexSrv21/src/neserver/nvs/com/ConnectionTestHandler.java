@@ -60,7 +60,7 @@ public class ConnectionTestHandler extends HandlerTemplate {
 
 		conData = readConnectionParameters(pr);
 
-		gData.logger.info("conData.ip= " + conData.ip);
+		gData.logger.info("conData.ip= " + conData.ip + " conData.conn_type =" + conData.conn_type);
 
 		switch (conData.conn_type) {
 		case "opersys":
@@ -219,10 +219,16 @@ public class ConnectionTestHandler extends HandlerTemplate {
 		params.put("user", conData.user);
 		params.put("password", conData.password);
 		params.put("clnt", conData.clnt);
+		
+		gData.logger.info("connection to ip=" + conData.ip + " sysnr=" + conData.sysnr + " user=" + conData.user);
+		
 
 		SAPR3 sr3 = new SAPR3(gData, params);
 		
 		String response=sr3.rfcGetSystemInfo();
+		
+		gData.logger.info("response =" + response);
+		
 		
 		String lines[] = response.split("::");
 		

@@ -59,6 +59,11 @@ public class AnalyzeScanDisks extends BatchJobTemplate implements Runnable {
 					SQL1 += "description='permitted percent=" + rec.get("permitted_percent") + "'";
 					SQL1 += " where id=" + rec.get("id");
 
+					String buffer = "max_size_gb=" + rec.get("max_size_gb");
+					buffer += "used_size_gb" + rec.get("used_size_gb");
+					gData.saveToLog(buffer, "disk_recovery_trace");
+					gData.saveToLog(SQL1, "disk_recovery_trace");
+					
 					gData.sqlReq.saveResult(SQL1);
 
 				}
