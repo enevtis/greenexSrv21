@@ -15,8 +15,6 @@ import java.util.Map;
 
 import javax.net.ssl.SSLSocket;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import greenexSrv2.nvs.com.globalData;
 import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;

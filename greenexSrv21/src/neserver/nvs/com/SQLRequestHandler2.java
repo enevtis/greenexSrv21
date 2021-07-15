@@ -1,14 +1,5 @@
 package neserver.nvs.com;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +19,7 @@ public class SQLRequestHandler2 extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 		String out = "";
 		String SQL = "";
@@ -75,6 +67,7 @@ public class SQLRequestHandler2 extends HandlerTemplate {
 		return out;
 	}
 
+	@Override
 	protected String readFromTable_sql_remote_check(String className, String job_name, String filter) {
 		String out = "";
 

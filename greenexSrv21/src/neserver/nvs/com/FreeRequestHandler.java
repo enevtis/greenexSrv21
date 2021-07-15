@@ -23,6 +23,7 @@ public class FreeRequestHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public void getResponse(SSLSocket socket, String paramsString) {
 
 		test = paramsString;
@@ -50,6 +51,7 @@ public class FreeRequestHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 		String out = "";
 		String action=params.get("action");

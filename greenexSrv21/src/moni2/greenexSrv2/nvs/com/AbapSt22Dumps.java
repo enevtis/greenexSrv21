@@ -2,13 +2,11 @@ package moni2.greenexSrv2.nvs.com;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.globalData;
-import moni2.greenexSrv2.nvs.com.SAPR3;
 import moni.greenexSrv2.nvs.com.remoteSystem;
 import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;

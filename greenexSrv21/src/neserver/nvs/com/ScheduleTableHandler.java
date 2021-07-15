@@ -1,16 +1,6 @@
 package neserver.nvs.com;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
-import javax.net.ssl.SSLSocket;
-
 import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.globalData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
@@ -33,6 +23,7 @@ public class ScheduleTableHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";

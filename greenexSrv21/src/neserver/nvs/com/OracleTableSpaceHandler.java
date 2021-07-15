@@ -17,6 +17,7 @@ public class OracleTableSpaceHandler extends HandlerTemplate {
 	}
 
 
+	@Override
 	public String getPage() {
 		String out = "", osType="";
 		
@@ -99,11 +100,11 @@ public class OracleTableSpaceHandler extends HandlerTemplate {
 	     	
 	     	if(rec.get(">>>").equals("YES")){
 	     		
-	     		leftPart = (int) (float) (((size_mb - free_mb) / max_mb) * 200);
+	     		leftPart = (int) (((size_mb - free_mb) / max_mb) * 200);
  	     		
 	     	}else {
 	     		
-	     		leftPart = (int) (float) (((size_mb - free_mb)  / size_mb) * 200);
+	     		leftPart = (int) (((size_mb - free_mb)  / size_mb) * 200);
 	     		
 	     	}
 	     	

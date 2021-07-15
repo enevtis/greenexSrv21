@@ -94,6 +94,7 @@ public class checkSAPHanaExpenciveSQL extends checkTemplate{
 		
 		
 	}
+	@Override
 	public void saveCheckResult (List<remoteSystem> systems) {
 		
 		Connection conn = null ;

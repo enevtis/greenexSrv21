@@ -1,17 +1,32 @@
 package neserver.nvs.com;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.sap.conn.jco.ext.DestinationDataProvider;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
-import moni2.greenexSrv2.nvs.com.SAPR3;
-import obj.greenexSrv2.nvs.com.SqlReturn;
 import obj.greenexSrv2.nvs.com.TblField;
 
 public class TestHandler extends HandlerTemplate {
@@ -27,6 +42,7 @@ public class TestHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";
@@ -46,116 +62,195 @@ public class TestHandler extends HandlerTemplate {
 
 		Map<String, String> sparams = new HashMap<String, String>();
 
-		out += getDataForAllSystems(sparams);
+		out += getDataFromWindows();
 
 		out += getEndPage();
 
 		return out;
 	}
 
-	public String getDataForAllSystems(Map<String, String> params) {
+	
+	public String getDataFromWindows() {
 		String out = "";
-		String SQL = "";
-//		SQL += "SELECT object_guid, MAX(check_date) AS max_check_date, MIN(check_date) AS min_check_date ";
-//		SQL += " FROM monitor_idocs GROUP BY object_guid ";
+	
+		String dirtyResponse = doCheckHttpsConnection();
 		
-		SQL += "SELECT c.short AS 'project', b.short AS 'sap_system', b.sid, b.def_ip, s1.*, ";
-		SQL += "TIMESTAMPDIFF(HOUR,s1.check_date_old,s1.check_date_new) AS 'past_hours' ";
-		SQL += "FROM ( ";
-		SQL += "SELECT object_guid, MAX(check_date) AS check_date_new, MIN(check_date) AS check_date_old FROM monitor_idocs ";
-		SQL += "GROUP BY object_guid ) s1 ";
-		SQL += "LEFT JOIN app_systems b ON s1.object_guid = b.guid ";
-		SQL += "LEFT JOIN projects c ON b.project_guid = c.guid ";
+		String cleanJsonString = dirtyResponse.substring(0,dirtyResponse.lastIndexOf("]}")+2);
+		
+		out = parseJson(cleanJsonString);
 		
 		
-		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
+		return out;
 		
-		for (Map<String, String> rec : records) {
+	}
+	
+	public String parseJson(String jsonString) {
+		String out = "";
+		
+		JSONObject obj;
+		
+		try {
+			obj = new JSONObject(jsonString);
 			
-			String objectGuid = rec.get("object_guid");
-			String maxCheckDate = rec.get("check_date_new");
-			String minCheckDate = rec.get("check_date_old");
-			
-			out += "<hr>";
-			out += " Проект:" + rec.get("project") + "<br>";
-			out += " SAP система:" + rec.get("sap_system") + "<br>";
-			int minutes = Integer.valueOf(rec.get("past_hours")) * 60;	
-			out += " интервал наблюдения " + Utils.timeConvert(minutes) + "<br>";
-			out += "с " + rec.get("check_date_old") + " по " + rec.get("check_date_new") + "<br>";
+			JSONObject res = obj.getJSONArray("payload").getJSONObject(0);
 
-			String link = "<a href='https://" + gData.getOwnIp() + ":" + gData.commonParams.get("webServicePort") ;
-			link += "/idocs?guid=" + objectGuid + "'>подробнее</a><br>данные для входа demo/demo";
-			out += link;								
+			JSONArray lines=res.getJSONArray("lines");
+			JSONArray perf = lines.getJSONObject(0).getJSONArray("perf");
+			
+			for (int i = 0; i < perf.length(); i++) {
+
+				String alias = perf.getJSONObject(i).getString("alias");
+				float maxValue = perf.getJSONObject(i).getJSONObject("float_value").getFloat("maximum");
+				
+				float usedValue = perf.getJSONObject(i).getJSONObject("float_value").getFloat("value");
+				
+				out += "<br>alias=" + alias + " maxValue= " + maxValue + " usedValue=" + usedValue;
+				
+			}			
 			
 			
-			String SQL2 = "";
-			SQL2 += "SELECT monthname(STR_TO_DATE(s1.month,'%m')) AS 'месяц', s1.year, ";
-			SQL2 += "FORMAT(s1.total_new,0) AS 'количество_idoc', FORMAT(s2.total_old,0) AS 'старое значение', ";
-			SQL2 += "FORMAT(s1.total_new - s2.total_old,0) AS 'рост', ";
-			SQL2 += "TIMESTAMPDIFF(HOUR,s2.check_date_old,s1.check_date_new) AS 'за часов' ";
-			SQL2 += "FROM ( ";
-			SQL2 += "SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month, ";
-			SQL2 += "sum(a.total) AS total_new, a.check_date AS check_date_new FROM monitor_idocs a ";
-			SQL2 += "LEFT JOIN app_systems b ON a.object_guid = b.guid ";
-			SQL2 += "WHERE ABS(TIMESTAMPDIFF(MINUTE,check_date,'" + maxCheckDate + "')) < 5 ";
-			SQL2 += "GROUP BY short, sid, def_ip, YEAR, MONTH ";
-			SQL2 += "ORDER BY short,YEAR,MONTH ) s1 ";
-			SQL2 += "LEFT JOIN  ";
-			SQL2 += "( ";
-			SQL2 += "SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month,  ";
-			SQL2 += "sum(a.total) AS total_old, a.check_date AS check_date_old FROM monitor_idocs a ";
-			SQL2 += "LEFT JOIN app_systems b ON a.object_guid = b.guid ";
-			SQL2 += "WHERE ABS(TIMESTAMPDIFF(MINUTE,check_date,'" + minCheckDate + "')) < 5 ";
-			SQL2 += "GROUP BY short, sid, def_ip, YEAR, MONTH ";
-			SQL2 += ") s2 ON s1.object_guid = s2.object_guid AND s1.year = s2.year AND s1.month = s2.month ";
-			SQL2 += "WHERE s1.object_guid = '" + objectGuid + "' ";			
+
+
+		} catch (JSONException e) {
+	
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
 			
-			out += Utils.getHtmlTablePageFromSqlreturn(gData, SQL2);
-			
-			
+//			s.params.put("result_text", errors.toString());
+//			gData.logger.severe(errors.toString());
 
 		}
-		
-		
-		return out;
+	return out;
+	
 	}
-	
-	
-	
-	
-	
-	public String doTest(Map<String, String> params) {
+	public String doCheckHttpsConnection() {
 		String out = "";
-		out += "<h3> Айдоки</h3>";
+		
+		int timeOutMs = 10000;
 
-		String SQL = "";
+		String pageUrl = "https://192.168.20.121:8443/query/check_drivesize";
+		
+		disableSslVerification();
+		HttpsURLConnection c = null;
+		
+		try {
+		URL url = new URL(pageUrl);
+			
+			
+		c = (HttpsURLConnection)url.openConnection();
+		
 
-SQL +="SELECT s1.object_guid ,s1.sid, s1.def_ip, s1.short, monthname(STR_TO_DATE(s1.month,'%m')) AS 'период', s1.year,  ";
-SQL +="FORMAT(s1.total_new,0) AS total_new, FORMAT(s2.total_old,0) AS total_old, ";
-SQL +="FORMAT(s1.total_new - s2.total_old,0) AS 'рост', ";
-SQL +="TIMESTAMPDIFF(HOUR,s2.check_date_old,s1.check_date_new) AS 'за дней' ";
-SQL +="FROM ( ";
-SQL +="SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month, ";
-SQL +="sum(a.total) AS total_new, a.check_date AS check_date_new FROM monitor_idocs a ";
-SQL +="LEFT JOIN app_systems b ON a.object_guid = b.guid ";
-SQL +="WHERE check_date = (SELECT MAX(check_date) FROM monitor_idocs) ";
-SQL +="GROUP BY short, sid, def_ip, YEAR, MONTH ";
-SQL +="ORDER BY short,YEAR,MONTH ) s1 ";
-SQL +="LEFT JOIN  ";
-SQL +="( ";
-SQL +="SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month, "; 
-SQL +="sum(a.total) AS total_old, a.check_date AS check_date_old FROM monitor_idocs a ";
-SQL +="LEFT JOIN app_systems b ON a.object_guid = b.guid ";
-SQL +="WHERE check_date = (SELECT MIN(check_date) FROM monitor_idocs) ";
-SQL +="GROUP BY short, sid, def_ip, YEAR, MONTH ";
-SQL +=") s2 ON s1.object_guid = s2.object_guid AND s1.year = s2.year AND s1.month = s2.month ";
+		
+		c.setRequestProperty ("Password", "init1234");
+		c.setRequestMethod("GET");
+//		c.setRequestProperty("Content-length", "0");
+		
+		c.setRequestProperty("Content-Type", "application/json");
+		c.setRequestProperty("Accept", "application/json");
+		
+		
+//		c.setUseCaches(false);
+ //       c.setAllowUserInteraction(false);
+		c.setConnectTimeout(timeOutMs);
+		c.setReadTimeout(timeOutMs);	
+		c.connect();
+		int response = c.getResponseCode();
+		
+		
+	       switch (response) {
+           case 200:
+           case 201:
+           try(BufferedReader br = new BufferedReader(
+        		   new InputStreamReader(c.getInputStream(), "utf-8"))) {
+        		     StringBuilder sb = new StringBuilder();
+        		     String responseLine = null;
+        		     while ((responseLine = br.readLine()) != null) {
+        		         sb.append(responseLine.trim());
+        		     }
+       		     out = "" + sb.toString();
+           
+           }
+      }
 
-		out += Utils.getHtmlTablePageFromSqlreturn(gData, SQL);
+		} catch (MalformedURLException e) {
+			
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
+			
 
+		} catch (IOException e) {
 
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
 
+		} finally {
+  
+	   
+	   if (c != null) {
+         try {
+        	 c.disconnect();
+         } catch (Exception e) {
+
+ 			StringWriter errors = new StringWriter();
+ 			e.printStackTrace(new PrintWriter(errors));
+ 			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
+        	 
+         }
+      }		
+   }	
+//		s.params.put("result",""+ response);
+//		s.params.put("message","ok");
 
 		return out;
-	}
+	}	
+	
+	protected void disableSslVerification() {
+	    try
+	    {
+	        // Create a trust manager that does not validate certificate chains
+	        TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+	            @Override
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+	                return null;
+	            }
+	            @Override
+				public void checkClientTrusted(X509Certificate[] certs, String authType) {
+	            }
+	            @Override
+				public void checkServerTrusted(X509Certificate[] certs, String authType) {
+	            }
+	        }
+	        };
+
+	        // Install the all-trusting trust manager
+	        SSLContext sc = SSLContext.getInstance("SSL");
+	        sc.init(null, trustAllCerts, new java.security.SecureRandom());
+	        HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+	        // Create all-trusting host name verifier
+	        HostnameVerifier allHostsValid = new HostnameVerifier() {
+	            @Override
+				public boolean verify(String hostname, SSLSession session) {
+	                return true;
+	            }
+	        };
+
+	        // Install the all-trusting host verifier
+	        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+	    } catch (NoSuchAlgorithmException e) {
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+
+			
+	    } catch (KeyManagementException e) {
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+
+	    }
+	}	
+
 
 }

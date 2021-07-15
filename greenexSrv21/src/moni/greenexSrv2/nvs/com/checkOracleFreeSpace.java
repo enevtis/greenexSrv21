@@ -10,7 +10,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import greenexSrv2.nvs.com.globalData;
-import simplecrypto.nvs.com.SimpleCrypto;
 
 public class checkOracleFreeSpace extends checkTemplate {
 	

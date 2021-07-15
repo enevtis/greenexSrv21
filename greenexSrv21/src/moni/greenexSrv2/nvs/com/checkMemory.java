@@ -8,7 +8,6 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.Normalizer;
 import java.util.List;
 
 import org.json.JSONArray;

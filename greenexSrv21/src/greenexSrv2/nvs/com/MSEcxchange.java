@@ -10,7 +10,6 @@ import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
-import simplecrypto.nvs.com.SimpleCrypto;
 
 public class MSEcxchange {
 	public globalData gData = new globalData();

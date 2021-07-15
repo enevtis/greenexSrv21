@@ -1,22 +1,12 @@
 package neserver.nvs.com;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
-
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
-
 import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.globalData;
-import moni.greenexSrv2.nvs.com.remoteSystem;
 import moni2.greenexSrv2.nvs.com.FileSystemsSpaceDiagram;
 import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
-import obj.greenexSrv2.nvs.com.TblField;
 
 public class SshRequestHandler extends HandlerTemplate {
 
@@ -25,6 +15,7 @@ public class SshRequestHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 		String out = "", osType="";
 		
@@ -33,7 +24,7 @@ public class SshRequestHandler extends HandlerTemplate {
 		this.caption = (params.containsKey("caption")) ? params.get("caption") : "";
 
 		if (!this.caption.isEmpty())
-			caption = gData.decode(this.caption);
+			caption = globalData.decode(this.caption);
 		else
 			caption = readFromTable_caption(this.getClass().getSimpleName(), action);
 

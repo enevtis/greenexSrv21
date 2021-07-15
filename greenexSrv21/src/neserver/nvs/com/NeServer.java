@@ -5,15 +5,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
-
 import javax.net.ssl.*;
 
 import greenexSrv2.nvs.com.globalData;
@@ -61,6 +56,7 @@ public class NeServer extends Thread {
 
 	}
 
+	@Override
 	public void run() {
 
 		try {

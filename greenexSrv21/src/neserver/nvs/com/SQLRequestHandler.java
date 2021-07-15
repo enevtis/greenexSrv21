@@ -8,15 +8,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
-import greenexSrv2.nvs.com.SqlRequest;
 import greenexSrv2.nvs.com.globalData;
-import moni.greenexSrv2.nvs.com.checkTemplate;
 import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
 import obj.greenexSrv2.nvs.com.SqlReturn;
@@ -38,6 +35,7 @@ public class SQLRequestHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";

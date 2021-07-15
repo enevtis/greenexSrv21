@@ -1,9 +1,6 @@
 package neserver.nvs.com;
 
-import java.util.List;
-
 import greenexSrv2.nvs.com.globalData;
-import obj.greenexSrv2.nvs.com.TblField;
 
 public class EmailControlHandler extends HandlerTemplate {
 
@@ -13,6 +10,7 @@ public class EmailControlHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 		String out = "";
 		out += getBeginPage();

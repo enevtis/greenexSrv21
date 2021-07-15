@@ -1,16 +1,9 @@
 package moni2.greenexSrv2.nvs.com;
 
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.Utils;
@@ -123,6 +116,7 @@ public class SshSingleResult extends BatchJobTemplate implements Runnable {
 
 	}
 
+	@Override
 	protected boolean doSshRequest(remoteSystem s, ConnectionData conData, String remoteSshText) {
 		boolean out = false;
 

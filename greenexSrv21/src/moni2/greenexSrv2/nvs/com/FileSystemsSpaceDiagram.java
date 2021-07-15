@@ -1,7 +1,5 @@
 package moni2.greenexSrv2.nvs.com;
 
-import java.math.BigDecimal;
-
 public class FileSystemsSpaceDiagram {
 
 	public String buildFileSystemDiagram(String sshResponse) {

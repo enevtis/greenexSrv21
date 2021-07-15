@@ -6,9 +6,7 @@ import java.util.Map;
 import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
-import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
-import obj.greenexSrv2.nvs.com.TblField;
 
 public class IdocsPageHandler extends HandlerTemplate {
 	public PhisObjProperties pr; 
@@ -17,6 +15,7 @@ public class IdocsPageHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";

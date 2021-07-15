@@ -3,7 +3,6 @@ package moni2.greenexSrv2.nvs.com;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
-import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
 import moni.greenexSrv2.nvs.com.remoteSystem;
 import obj.greenexSrv2.nvs.com.ConnectionData;
@@ -263,7 +261,7 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 
 	private void addNewRecord(String key, int value, Map<String, Integer> totalRec) {
 		if (totalRec.containsKey(key)) {
-			totalRec.put(key, (int) totalRec.get(key) + value);
+			totalRec.put(key, totalRec.get(key) + value);
 		} else {
 			totalRec.put(key, value);
 		}

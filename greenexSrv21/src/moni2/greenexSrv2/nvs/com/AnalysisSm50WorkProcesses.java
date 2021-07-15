@@ -44,9 +44,78 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 
 		checkUsedPercentWorkProcesses();
 		sendLetters();
+		checkRecoveryAlerts();		
+		
 
 	}
 
+	private void checkRecoveryAlerts() {
+		
+		String maxFreePercent = gData.commonParams.containsKey("AbapWorkProcessFreePercentLimit")
+				? gData.commonParams.get("AbapWorkProcessFreePercentLimit")
+				: "50";	
+		
+		String SQL = "select * from problems where monitor_number=" + currMonitorNumber;		
+		
+		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
+		List<String> recoverySql = new ArrayList();
+		
+		
+		for (Map<String, String> rec : records) {
+	
+			String problemGuid = rec.get("guid");
+			String objectGuid = rec.get("object_guid");
+			String details = rec.get("details");
+			String parts[] = details.split("::");
+			String appServer = parts[2];
+			String wpType = parts[3];
+			
+			
+			
+			
+			String SQL2 = "";
+			SQL2 += "";
+			SQL2 += "SELECT s1.total_wp,s2.free_wp, (s1.total_wp-s2.free_wp)/s1.total_wp * 100 AS used_percent, ";
+			SQL2 += "CASE WHEN (s1.total_wp-s2.free_wp)/s1.total_wp * 100 < " + maxFreePercent + " THEN 'recovery' ELSE 'do_nothing' END AS 'action' ";
+			SQL2 += "FROM ";
+			SQL2 += "(SELECT COUNT(*) AS total_wp FROM monitor_abap_wp WHERE check_date = (SELECT MAX(check_date) FROM monitor_abap_wp WHERE object_guid='" + objectGuid + "') "; 
+			SQL2 += "AND object_guid='" + objectGuid + "' AND app_server = '" + appServer + "' AND wp_typ = '" + wpType + "' ) s1 ";
+			SQL2 += "JOIN ";
+			SQL2 += "(SELECT COUNT(*) AS free_wp FROM monitor_abap_wp WHERE check_date = (SELECT MAX(check_date) FROM monitor_abap_wp WHERE object_guid='" + objectGuid + "')  ";
+			SQL2 += "AND object_guid='" + objectGuid + "' AND app_server = '" + appServer + "' AND wp_typ = '" + wpType + "' AND wp_status='Waiting' ) s2 ";
+			
+			gData.saveToLog(SQL2, params.get("job_name"));
+			
+			
+			List<Map<String, String>> records3 = gData.sqlReq.getSelect(SQL);
+			
+			for (Map<String, String> rec3 : records3) {
+				String action = rec3.get("action");
+				if(action.toLowerCase().contains("recovery")) {
+				
+					String SQL3 = "update problems set is_fixed='X',";	
+					SQL3 += "fixed=now(),fixed_result=" + params.get("used_percent") + ",";
+					SQL3 += "fixed_limit=" + maxFreePercent + "";
+					SQL3 += " where guid='" + problemGuid+ "'" ;
+					
+					recoverySql.add(SQL3);
+					gData.saveToLog(SQL3, params.get("job_name"));
+					
+				}
+				
+				
+				
+			}
+			
+		
+		}
+				
+		
+		gData.sqlReq.saveResult(recoverySql);
+		
+	}
+	
+	
 	private void checkUsedPercentWorkProcesses() {
 
 		appservers.clear();

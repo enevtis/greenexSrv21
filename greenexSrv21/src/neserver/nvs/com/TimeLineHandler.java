@@ -8,9 +8,7 @@ import java.util.Map;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.globalData;
-import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
-import obj.greenexSrv2.nvs.com.SqlReturn;
 
 public class TimeLineHandler extends HandlerTemplate {
 
@@ -19,6 +17,7 @@ public class TimeLineHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 		String out = "", osType = "";
 

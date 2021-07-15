@@ -1,12 +1,7 @@
 package neserver.nvs.com;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
-
-import javax.net.ssl.SSLSocket;
 
 import greenexSrv2.nvs.com.globalData;
 import obj.greenexSrv2.nvs.com.TblField;
@@ -25,6 +20,7 @@ public class LandscapeHandler extends HandlerTemplate {
 	}
 
 
+	@Override
 	public String getPage() {
 		String out = "";
 		out += getBeginPage();

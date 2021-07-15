@@ -1,14 +1,8 @@
 package neserver.nvs.com;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
-import java.util.Properties;
-
-
 import greenexSrv2.nvs.com.MSEcxchange;
 import greenexSrv2.nvs.com.globalData;
-import obj.greenexSrv2.nvs.com.PhisObjProperties;
 import obj.greenexSrv2.nvs.com.TblField;
 
 public class SendMailHandler extends HandlerTemplate {
@@ -25,6 +19,7 @@ public class SendMailHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";

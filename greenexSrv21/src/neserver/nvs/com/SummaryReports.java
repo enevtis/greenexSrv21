@@ -3,7 +3,6 @@ package neserver.nvs.com;
 import java.util.List;
 
 import greenexSrv2.nvs.com.globalData;
-import obj.greenexSrv2.nvs.com.PhisObjProperties;
 import obj.greenexSrv2.nvs.com.TblField;
 /*
  * //option_maps - добавить пункты навигации
@@ -26,6 +25,7 @@ public class SummaryReports extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";

@@ -3,7 +3,6 @@ package moni2.greenexSrv2.nvs.com;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

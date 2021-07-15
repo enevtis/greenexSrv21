@@ -2,8 +2,6 @@ package moni.greenexSrv2.nvs.com;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import greenexSrv2.nvs.com.globalData;
 
 public class SelfControl implements Runnable{

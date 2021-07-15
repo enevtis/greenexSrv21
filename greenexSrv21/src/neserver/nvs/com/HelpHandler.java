@@ -1,18 +1,10 @@
 package neserver.nvs.com;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-
-import javax.net.ssl.SSLSocket;
 
 import greenexSrv2.nvs.com.globalData;
 
@@ -27,6 +19,7 @@ public class HelpHandler extends HandlerTemplate{
 	}
 
 
+	@Override
 	public String getPage() {
 		String out = "";
 

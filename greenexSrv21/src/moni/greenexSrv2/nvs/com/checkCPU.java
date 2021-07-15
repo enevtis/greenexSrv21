@@ -8,32 +8,13 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import greenexSrv2.nvs.com.globalData;
-import simplecrypto.nvs.com.SimpleCrypto;
 
 public class checkCPU extends checkTemplate {
 
@@ -141,7 +122,7 @@ public class checkCPU extends checkTemplate {
 				
 				float idleCPUusage = Float.valueOf(strValue);
 				
-				float usedPercent = (float)100 - idleCPUusage;
+				float usedPercent = 100 - idleCPUusage;
 				
 				system.params.put("result_number",String.valueOf(usedPercent));
 				system.params.put("result_text","Idle:" + strValue + " %" );
@@ -300,7 +281,7 @@ public class checkCPU extends checkTemplate {
 					
 					float idleCPUusage = Float.valueOf(strValue);
 					
-					float usedPercent = (float)100 - idleCPUusage;
+					float usedPercent = 100 - idleCPUusage;
 					
 					system.params.put("result_number",String.valueOf(usedPercent));
 					system.params.put("result_text","Idle:" + strValue + " %" );

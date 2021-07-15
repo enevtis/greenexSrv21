@@ -19,6 +19,7 @@ public class AboutProgramHandler extends HandlerTemplate{
 
 	}
 
+	@Override
 	public void getResponse(SSLSocket socket, String paramsString) {
 		
 		test = paramsString;
@@ -50,6 +51,7 @@ public class AboutProgramHandler extends HandlerTemplate{
 	}
 
 	
+	@Override
 	public String getPage() {
 		String out = "";
 		String curStyle = "";

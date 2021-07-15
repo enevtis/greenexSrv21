@@ -4,11 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import com.sap.conn.jco.ext.DestinationDataProvider;
-
 import greenexSrv2.nvs.com.globalData;
 
 public class checkAbapDumps extends checkTemplate{

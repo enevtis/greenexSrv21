@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -88,6 +87,7 @@ public class checkSAPHanaAlerts extends checkTemplate{
 	
 	
 	
+	@Override
 	public void saveCheckResult (List<remoteSystem> systems) {
 		
 		Connection conn = null ;

@@ -2,17 +2,11 @@ package moni.greenexSrv2.nvs.com;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.globalData;
-import microsoft.exchange.webservices.data.core.ExchangeService;
 
 public class AlertAnalyzer implements Runnable{
 	public globalData gData = new globalData();

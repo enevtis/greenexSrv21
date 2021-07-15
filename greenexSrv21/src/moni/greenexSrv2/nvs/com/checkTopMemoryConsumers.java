@@ -1,10 +1,5 @@
 package moni.greenexSrv2.nvs.com;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -86,6 +81,7 @@ public class checkTopMemoryConsumers extends checkTemplate{
 		SaveToLog(s.getShortDescr() + " records=" + s.records.size(), job.job_name);
 		
 	}
+	@Override
 	public void saveCheckResult (List<remoteSystem> systems) {
 		
 		Connection conn = null ;

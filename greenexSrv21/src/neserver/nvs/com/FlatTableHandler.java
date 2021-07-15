@@ -1,19 +1,9 @@
 package neserver.nvs.com;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import javax.net.ssl.SSLSocket;
-
 import greenexSrv2.nvs.com.globalData;
-import obj.greenexSrv2.nvs.com.PhisObjProperties;
 import obj.greenexSrv2.nvs.com.TblField;
 
 public class FlatTableHandler extends HandlerTemplate {
@@ -32,6 +22,7 @@ public class FlatTableHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 		String out = "";
 
@@ -70,7 +61,7 @@ public class FlatTableHandler extends HandlerTemplate {
 		SQL += "and colName='" + screenName + "' and lang='" + gData.lang + "'";
 
 		if (!this.caption.isEmpty())
-			caption = gData.decode(this.caption);
+			caption = globalData.decode(this.caption);
 		else
 			caption = readFrom_flat_table_caption(screenName);
 

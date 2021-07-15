@@ -92,6 +92,7 @@ public class checkTopTablesOnDisk extends checkTemplate{
 	    
 		
 	}
+	@Override
 	public void saveCheckResult (List<remoteSystem> systems) {
 		
 		

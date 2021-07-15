@@ -1,14 +1,9 @@
 package moni.greenexSrv2.nvs.com;
 
-import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.globalData;
-import moni.greenexSrv2.nvs.com.batchJob;
-import moni.greenexSrv2.nvs.com.checkTemplate;
-import moni.greenexSrv2.nvs.com.remoteSystem;
-import simplecrypto.nvs.com.SimpleCrypto;
 
 public class checkSapHanaLicense extends checkTemplate {
 	

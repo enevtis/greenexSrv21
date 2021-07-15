@@ -19,6 +19,7 @@ public class ImgHandler extends HandlerTemplate{
 		super(gData);
 	}
 
+	@Override
 	public void getResponse(SSLSocket socket, String paramsString) {
 		
 		try {

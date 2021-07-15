@@ -1,6 +1,5 @@
 package neserver.nvs.com;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -8,14 +7,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.net.ssl.SSLSocket;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -24,12 +19,9 @@ import com.jcraft.jsch.Session;
 
 import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.globalData;
-import moni.greenexSrv2.nvs.com.remoteSystem;
 import moni2.greenexSrv2.nvs.com.SAPR3;
 import obj.greenexSrv2.nvs.com.ConnectionData;
-import obj.greenexSrv2.nvs.com.GraphJsObject;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
-import obj.greenexSrv2.nvs.com.SqlReturn;
 import obj.greenexSrv2.nvs.com.TblField;
 
 public class ConnectionTestHandler extends HandlerTemplate {
@@ -45,6 +37,7 @@ public class ConnectionTestHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";

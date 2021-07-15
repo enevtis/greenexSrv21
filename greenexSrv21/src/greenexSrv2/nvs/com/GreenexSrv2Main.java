@@ -13,24 +13,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import moni.greenexSrv2.nvs.com.AlertAnalyzer;
-import moni.greenexSrv2.nvs.com.AlertAnalyzerDisks;
-import moni.greenexSrv2.nvs.com.MailNotificator;
-import moni.greenexSrv2.nvs.com.MailRecoveryList;
-import moni.greenexSrv2.nvs.com.MonitorService;
-import moni.greenexSrv2.nvs.com.SelfControl;
 import moni.greenexSrv2.nvs.com.batchJob;
-import moni2.greenexSrv2.nvs.com.AnalyzeScan;
-import moni2.greenexSrv2.nvs.com.AnalyzeScanDisks;
-import moni2.greenexSrv2.nvs.com.AnalyzeScanOracleTs;
-import moni2.greenexSrv2.nvs.com.HouseKeepingJob;
 import moni2.greenexSrv2.nvs.com.JobScan;
-import moni2.greenexSrv2.nvs.com.MailingScan;
-import moni2.greenexSrv2.nvs.com.RegularReport;
 import moni2.greenexSrv2.nvs.com.TechServiceScan;
 
 public class GreenexSrv2Main {
@@ -86,7 +72,7 @@ public class GreenexSrv2Main {
 		
 		
 		
-		srv.gData.logger.info("starting greenex gui server...Version:" + srv.gData.getVersionInfo());
+		srv.gData.logger.info("starting greenex gui server...Version:" + globalData.getVersionInfo());
 		srv.gData.logger.info("runtime details:" + srv.gData.getSystemProperties());
 
 		webSrv = new WebUIService(srv.gData);

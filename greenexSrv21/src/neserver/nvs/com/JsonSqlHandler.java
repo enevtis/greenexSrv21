@@ -19,6 +19,7 @@ public class JsonSqlHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public void getResponse(SSLSocket socket, String paramsString) {
 
 	
@@ -45,6 +46,7 @@ public class JsonSqlHandler extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 		String out = "";
 		

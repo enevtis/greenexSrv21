@@ -29,6 +29,7 @@ public class SystemImageEditHandler2 extends HandlerTemplate {
 
 	}
 
+	@Override
 	public void getResponse(SSLSocket socket, String paramsString) {
 
 		test = paramsString;
@@ -56,6 +57,7 @@ public class SystemImageEditHandler2 extends HandlerTemplate {
 
 	}
 
+	@Override
 	public String getPage() {
 
 		String out = "";
@@ -251,6 +253,7 @@ public class SystemImageEditHandler2 extends HandlerTemplate {
 		return out;
 	}
 
+	@Override
 	protected String buildJavascriptAdditionalFunctionsArea() {
 		String out = "";
 		out += "<script>  \n";
@@ -494,6 +497,7 @@ public class SystemImageEditHandler2 extends HandlerTemplate {
 		return out;
 	}
 
+	@Override
 	protected String buildHtmlArea() {
 		String out = "";
 		String function = "";
