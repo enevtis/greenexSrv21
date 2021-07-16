@@ -123,6 +123,7 @@ public class globalData {
 		router.put("/time_line", pack + "TimeLineHandler");
 		router.put("/utils", pack + "UtilsHandler");
 		router.put("/test", pack + "TestHandler");
+		router.put("/test2", pack + "Test2Handler");
 		router.put("/idocs", pack + "IdocsPageHandler");
 		
 	}

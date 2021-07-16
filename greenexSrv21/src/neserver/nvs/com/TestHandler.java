@@ -73,12 +73,26 @@ public class TestHandler extends HandlerTemplate {
 	public String getDataFromWindows() {
 		String out = "";
 	
-		String dirtyResponse = doCheckHttpsConnection();
+		String testLink = getTestLink();
 		
-		String cleanJsonString = dirtyResponse.substring(0,dirtyResponse.lastIndexOf("]}")+2);
+		String dirtyResponse = doCheckHttpsConnection(testLink);
 		
-		out = parseJson(cleanJsonString);
+		if (dirtyResponse.contains("]}")) {
+
+			String cleanJsonString = dirtyResponse.substring(0,dirtyResponse.lastIndexOf("]}")+2);
+			out += "test link (NSCPclientTestLink): " + testLink;
+			out += "<br>" + parseJson(cleanJsonString);
+
+//			out += cleanJsonString;
 		
+		} else {
+			return dirtyResponse;
+		}
+		
+		
+		
+		
+
 		
 		return out;
 		
@@ -100,11 +114,13 @@ public class TestHandler extends HandlerTemplate {
 			for (int i = 0; i < perf.length(); i++) {
 
 				String alias = perf.getJSONObject(i).getString("alias");
+				
 				float maxValue = perf.getJSONObject(i).getJSONObject("float_value").getFloat("maximum");
 				
 				float usedValue = perf.getJSONObject(i).getJSONObject("float_value").getFloat("value");
+				String unit = perf.getJSONObject(i).getJSONObject("float_value").getString("unit");
 				
-				out += "<br>alias=" + alias + " maxValue= " + maxValue + " usedValue=" + usedValue;
+				out += "<br>alias=" + alias + " maxValue= " + maxValue + " usedValue=" + usedValue + " unit=" + unit;
 				
 			}			
 			
@@ -115,21 +131,19 @@ public class TestHandler extends HandlerTemplate {
 	
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
-			
-//			s.params.put("result_text", errors.toString());
-//			gData.logger.severe(errors.toString());
+			out = errors.toString();
+			gData.logger.severe(jsonString + "\n" + errors.toString());
 
 		}
 	return out;
 	
 	}
-	public String doCheckHttpsConnection() {
+	public String doCheckHttpsConnection(String testLink) {
 		String out = "";
 		
 		int timeOutMs = 10000;
 
-		String pageUrl = "https://192.168.20.121:8443/query/check_drivesize";
+		String pageUrl = testLink;
 		
 		disableSslVerification();
 		HttpsURLConnection c = null;
@@ -177,14 +191,14 @@ public class TestHandler extends HandlerTemplate {
 			
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
+			gData.logger.severe(testLink + "\n" + errors.toString());
 			
 
 		} catch (IOException e) {
 
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
+			gData.logger.severe(testLink + "\n" + errors.toString());
 
 		} finally {
   
@@ -196,7 +210,7 @@ public class TestHandler extends HandlerTemplate {
 
  			StringWriter errors = new StringWriter();
  			e.printStackTrace(new PrintWriter(errors));
- 			gData.saveToLog(errors.toString(),this.getClass().getSimpleName());
+			gData.logger.severe(testLink + "\n" + errors.toString());
         	 
          }
       }		
@@ -251,6 +265,20 @@ public class TestHandler extends HandlerTemplate {
 
 	    }
 	}	
+protected String getTestLink() {
+	String out = "";
+	String SQL = "select * from user_settings";
+	List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
+			
+			for (Map<String, String> rec : records) {
+				
+				out = rec.get("param_value");
 
+			}
+	
+	
+	
+	return out;
+}
 
 }

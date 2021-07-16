@@ -24,12 +24,17 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 	public void run() {
 
 		try {
-
+			
+			gData.truncateLog(params.get("job_name"));
+			gData.saveToLog(params.get("job_name") + " starts.", params.get("job_name"));
+			
 			setRunningFlag_regular();
 
 			analyze();
 
 			reSetRunningFlag_regular();
+			gData.saveToLog(params.get("job_name") + " is finished.", params.get("job_name"));
+			
 
 		} catch (Exception e) {
 
@@ -42,9 +47,17 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 
 	private void analyze() {
 
+		
+		
+		
 		checkUsedPercentWorkProcesses();
-		sendLetters();
+		gData.saveToLog("checkUsedPercentWorkProcesses() is finished.", params.get("job_name"));
+		
 		checkRecoveryAlerts();		
+		gData.saveToLog("checkRecoveryAlerts() is finished.", params.get("job_name"));
+
+		sendLetters();
+		gData.saveToLog("sendLetters() is finished.", params.get("job_name"));		
 		
 
 	}
@@ -66,12 +79,20 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 			String problemGuid = rec.get("guid");
 			String objectGuid = rec.get("object_guid");
 			String details = rec.get("details");
-			String parts[] = details.split("::");
-			String appServer = parts[2];
-			String wpType = parts[3];
+//			String parts[];
+			String appServer = "";
+			String wpType = "";
 			
-			
-			
+			if(details !=null ) {
+				if (details.contains("::")) {
+					String parts[] = details.split("::");
+					if (parts.length > 2) {
+						appServer = parts[2];
+						wpType = parts[3];
+					}
+				}
+				
+			}
 			
 			String SQL2 = "";
 			SQL2 += "";
@@ -84,17 +105,16 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 			SQL2 += "(SELECT COUNT(*) AS free_wp FROM monitor_abap_wp WHERE check_date = (SELECT MAX(check_date) FROM monitor_abap_wp WHERE object_guid='" + objectGuid + "')  ";
 			SQL2 += "AND object_guid='" + objectGuid + "' AND app_server = '" + appServer + "' AND wp_typ = '" + wpType + "' AND wp_status='Waiting' ) s2 ";
 			
-			gData.saveToLog(SQL2, params.get("job_name"));
 			
 			
-			List<Map<String, String>> records3 = gData.sqlReq.getSelect(SQL);
-			
-			for (Map<String, String> rec3 : records3) {
-				String action = rec3.get("action");
+			List<Map<String, String>> records2 = gData.sqlReq.getSelect(SQL2);
+
+			for (Map<String, String> rec2 : records2) {
+				String action = rec2.get("action");
 				if(action.toLowerCase().contains("recovery")) {
 				
-					String SQL3 = "update problems set is_fixed='X',";	
-					SQL3 += "fixed=now(),fixed_result=" + params.get("used_percent") + ",";
+					String SQL3 = "update problems set `is_fixed`='X',";	
+					SQL3 += "fixed=now(),fixed_result=" + rec2.get("used_percent") + ",";
 					SQL3 += "fixed_limit=" + maxFreePercent + "";
 					SQL3 += " where guid='" + problemGuid+ "'" ;
 					
@@ -127,7 +147,7 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 		SQL = SQL.replace("!MAX_USED_PERCENT!", maxUsedPercent);
 		List<String> newAlertsListSql = new ArrayList<String>();
 
-		gData.truncateLog(params.get("job_name"));
+		
 		int counter = 0;
 
 		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);

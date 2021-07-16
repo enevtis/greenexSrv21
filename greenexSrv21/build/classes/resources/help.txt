@@ -1,0 +1,55 @@
+
+
+for (Map.Entry<String, Object> entry : map.entrySet()) {
+    String key = entry.getKey();
+    Object value = entry.getValue();
+    // ...
+}
+
+
+String SQL = "select ...";
+List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
+		
+		for (Map<String, String> rec : records) {
+			
+			String action = rec.get("action");
+
+		}	
+
+
+			StringWriter errors = new StringWriter();
+			e.printStackTrace(new PrintWriter(errors));
+			gData.logger.severe(SQL + " \n " + errors.toString());
+
+
+
+
+
+		
+SELECT s1.object_guid ,s1.sid, s1.def_ip, s1.short, monthname(STR_TO_DATE(s1.month,'%m')) AS 'период', s1.year, 
+FORMAT(s1.total_new,0) AS total_new, FORMAT(s2.total_old,0) AS total_old,
+ s1.total_new - s2.total_old AS 'рост',
+TIMESTAMPDIFF(HOUR,s2.check_date_old,s1.check_date_new) AS 'за дней'
+FROM (
+SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month,
+sum(a.total) AS total_new, a.check_date AS check_date_new FROM monitor_idocs a
+LEFT JOIN app_systems b ON a.object_guid = b.guid
+WHERE check_date = (SELECT MAX(check_date) FROM monitor_idocs)
+GROUP BY short, sid, def_ip, YEAR, MONTH
+ORDER BY short,YEAR,MONTH ) s1
+LEFT JOIN 
+(
+SELECT a.object_guid, b.sid, b.def_ip, b.short,a.year, a.month, 
+sum(a.total) AS total_old, a.check_date AS check_date_old FROM monitor_idocs a
+LEFT JOIN app_systems b ON a.object_guid = b.guid
+WHERE check_date = (SELECT MIN(check_date) FROM monitor_idocs)
+GROUP BY short, sid, def_ip, YEAR, MONTH
+) s2 ON s1.object_guid = s2.object_guid AND s1.year = s2.year AND s1.month = s2.month
+
+
+SELECT a.* 
+FROM monitor_idocs a
+LEFT JOIN app_systems b ON a.object_guid = b.guid 
+WHERE check_date = (SELECT MAX(check_date) FROM monitor_idocs)
+
+#SELECT a.object_guid, b.short, a.month,a.year,

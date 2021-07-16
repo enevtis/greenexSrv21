@@ -142,7 +142,7 @@ public class RegularIdocsReport extends BatchJobTemplate implements Runnable {
 		List<String> out = new ArrayList();
 		String SQL = "";
 
-		SQL = "SELECT * FROM recepients WHERE filter = '" + filter + "'";
+		SQL = "SELECT * FROM recepients WHERE `filter` = '" + filter + "' and `active`='X'";
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
 		for (Map<String, String> rec : records_list) {

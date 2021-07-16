@@ -213,49 +213,7 @@ public class AbapIdocStat extends BatchJobTemplate implements Runnable {
 
 	}	
 		
-		
-		
-		
-		/*
-		 * 
-		 * if (outR3.contains("::")) {
-		 * 
-		 * String strFields[] = outR3.split("\\s*::\\s*");
-		 * 
-		 * for (int i = 0; i < strFields.length; i++) {
-		 * 
-		 * String parts[] = strFields[i].split(";"); addNewRecord(strFields[i], 1,
-		 * idocs);
-		 * 
-		 * } } else {
-		 * 
-		 * idocs.put("0;-;-;-", 0);
-		 * 
-		 * }
-		 * 
-		 * params.put("result", "" + counter); params.put("message", "ok");
-		 * 
-		 * 
-		 * for (Map.Entry<String, Integer> pair : idocs.entrySet()) {
-		 * 
-		 * String curKey = pair.getKey(); String parts[] = curKey.split(";");
-		 * 
-		 * String sqlIns = ""; sqlIns += "insert into monitor_idocs ("; sqlIns +=
-		 * "`object_guid`,"; sqlIns += "`year`,"; sqlIns += "`month`,"; sqlIns +=
-		 * "`status`,"; sqlIns += "`sender`,"; sqlIns += "`reciever`,"; sqlIns +=
-		 * "`idoc_type`,"; sqlIns += "`total`,"; sqlIns += "`check_date`"; sqlIns +=
-		 * ") values ("; sqlIns += "'" + params.get("guid") + "',"; sqlIns += "'" + Year
-		 * + "',"; sqlIns += "'" + Month + "',"; sqlIns += "'" + ((parts.length >= 0) ?
-		 * parts[0].trim() : "-") + "',"; sqlIns += "'" + ((parts.length >= 1) ?
-		 * parts[1].trim() : "-") + "',"; sqlIns += "'" + ((parts.length >= 2) ?
-		 * parts[2].trim() : "-") + "',"; sqlIns += "'" + ((parts.length >= 3) ?
-		 * parts[3].trim() : "-") + "',"; sqlIns += "" + pair.getValue() + ","; sqlIns
-		 * += "'" + currentNow + "'"; sqlIns += ")";
-		 * 
-		 * sqlList.add(sqlIns);
-		 * 
-		 * }
-		 */
+
 		return out;
 	}
 

@@ -171,6 +171,8 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 			if (subjectLetterProblem.length() > 8) commonSubjectLetter += subjectLetterProblem;
 			
 			
+			if (commonSubjectLetter.length() > 125) commonSubjectLetter = commonSubjectLetter.substring(0,125) + " и другие ...";
+			
 			
 			gData.logger.info(
 					"<p style='color:blue;'>Письмо:" + recepientsAll + " " + commonSubjectLetter + " " + bodyLetter + "</p>");

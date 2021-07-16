@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import moni.greenexSrv2.nvs.com.batchJob;
 import moni2.greenexSrv2.nvs.com.JobScan;
+import moni2.greenexSrv2.nvs.com.ResetStuckJobScan;
 import moni2.greenexSrv2.nvs.com.TechServiceScan;
 
 public class GreenexSrv2Main {
@@ -95,7 +96,9 @@ public class GreenexSrv2Main {
 
 		
 		srv.gData.executor.scheduleAtFixedRate(new TechServiceScan(srv.gData), 0, 60, TimeUnit.SECONDS);
-		srv.gData.logger.info("TechServiceScan started...");
+		srv.gData.logger.info("TechServiceScan started...");		
+		srv.gData.executor.scheduleAtFixedRate(new ResetStuckJobScan(srv.gData), 10, 60, TimeUnit.SECONDS);
+		srv.gData.logger.info("ResetStuckJobScan started...");
 		srv.gData.logger.info("All services Greenex monitor srarted...");
 
 		
