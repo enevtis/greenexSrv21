@@ -14,26 +14,29 @@ import greenexSrv2.nvs.com.globalData;
 public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runnable {
 
 	public String currMonitorNumber = "303";
+	public String currJobName = "";
 	public Map<String, String> appservers = new HashMap();
 
 	public AnalysisSm50WorkProcesses(globalData gData, Map<String, String> params) {
 		super(gData, params);
+		
 	}
 
 	@Override
 	public void run() {
 
 		try {
+			currJobName = params.get("job_name");
 			
-			gData.truncateLog(params.get("job_name"));
-			gData.saveToLog(params.get("job_name") + " starts.", params.get("job_name"));
+			gData.truncateLog(this.currJobName);
+			gData.saveToLog(this.currJobName + " starts.", this.currJobName);
 			
 			setRunningFlag_regular();
 
 			analyze();
 
 			reSetRunningFlag_regular();
-			gData.saveToLog(params.get("job_name") + " is finished.", params.get("job_name"));
+			gData.saveToLog(this.currJobName + " is finished.", this.currJobName);
 			
 
 		} catch (Exception e) {
@@ -68,7 +71,7 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 				? gData.commonParams.get("AbapWorkProcessFreePercentLimit")
 				: "50";	
 		
-		String SQL = "select * from problems where monitor_number=" + currMonitorNumber;		
+		String SQL = "select * from problems where monitor_number=" + currMonitorNumber +" and is_fixed <> 'X'";		
 		
 		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
 		List<String> recoverySql = new ArrayList();
@@ -82,13 +85,15 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 //			String parts[];
 			String appServer = "";
 			String wpType = "";
+	
+//ERP PROD ::erp-ci::02::mlk-erp-di12_EAP_12::BGD - details format			
 			
 			if(details !=null ) {
 				if (details.contains("::")) {
 					String parts[] = details.split("::");
 					if (parts.length > 2) {
-						appServer = parts[2];
-						wpType = parts[3];
+						appServer = parts[3];
+						wpType = parts[4];
 					}
 				}
 				
@@ -105,7 +110,7 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 			SQL2 += "(SELECT COUNT(*) AS free_wp FROM monitor_abap_wp WHERE check_date = (SELECT MAX(check_date) FROM monitor_abap_wp WHERE object_guid='" + objectGuid + "')  ";
 			SQL2 += "AND object_guid='" + objectGuid + "' AND app_server = '" + appServer + "' AND wp_typ = '" + wpType + "' AND wp_status='Waiting' ) s2 ";
 			
-			
+			gData.saveToLog(SQL2, this.currJobName);
 			
 			List<Map<String, String>> records2 = gData.sqlReq.getSelect(SQL2);
 
@@ -119,7 +124,7 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 					SQL3 += " where guid='" + problemGuid+ "'" ;
 					
 					recoverySql.add(SQL3);
-					gData.saveToLog(SQL3, params.get("job_name"));
+					gData.saveToLog(SQL3, this.currJobName);
 					
 				}
 				

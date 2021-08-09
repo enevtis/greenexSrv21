@@ -39,15 +39,40 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 
 	private void analyze() {
 
-		gData.truncateLog(params.get("job_name"));
+		currJobName = params.get("job_name");
+		
+		gData.truncateLog(currJobName);
 	
 		checkNewAlerts();
 		checkStatusOldAlerts();
 		sendLetters();
 		resetStuckStarts();
+		clearOldFixedProblems();
 
 	}
 
+	protected void clearOldFixedProblems() {
+		
+		String SQL = "SELECT * FROM problems WHERE is_fixed = 'X' AND is_recovery_mailing = 'X' AND timestampdiff(HOUR,is_recovery_mailing,NOW()) > 3 ";
+
+		List<Map<String, String>> records = gData.sqlReq.getSelect(SQL);
+		List<String> updSql = new ArrayList<>();
+		
+		for (Map<String, String> rec : records) {
+			
+			String SQLdel = "delete from problems where id=" + rec.get("id");
+			updSql.add(SQLdel);
+			gData.saveToLog(SQLdel,this.currJobName);
+			
+
+		}
+		
+		gData.sqlReq.saveResult(updSql);
+		
+		
+	}
+	
+	
 	protected void resetStuckStarts() {
 		
 		String SQL = readFrom_sql_text(this.getClass().getSimpleName(),"reset_stuck_starts");
@@ -116,7 +141,8 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 						bodyLetter += "новое значение: " + rec.get("fixed_result") + " ";
 						bodyLetter += "лимит " + rec.get("fixed_limit") + " ";
 
-						String updSQL = "update `problems` set `is_last_mailing`='X',last_mailing=NOW()";
+						String updSQL = "update `problems` set `is_last_mailing`='X',last_mailing=NOW(),";
+						updSQL += "is_recovery_mailing ='X',recovery_mailing=NOW() ";
 						updSQL += " where guid='" + rec.get("guid") + "'";
 
 						gData.sqlReq.saveResult(updSQL);

@@ -58,14 +58,14 @@ public class winServersDisksDataCollect extends BatchJobTemplate implements Runn
 	}
 
 	protected void doCheck() {
-		List<remoteSystem> db_systems = readServersListForCheck(params.get("job_number"));
+		List<remoteSystem> servers = readServersListForCheck(params.get("job_number"));
 
 		List<String> insSql = new ArrayList();
 
 		gData.truncateLog(params.get("job_name"));
-		gData.saveToLog("found " + db_systems.size() + " systems to start.", params.get("job_name"));
+		gData.saveToLog("found " + servers.size() + " systems to start.", params.get("job_name"));
 
-		for (remoteSystem s : db_systems) {
+		for (remoteSystem s : servers) {
 
 			ObjectParametersReader parReader = new ObjectParametersReader(gData);
 			PhisObjProperties pr = parReader.getParametersPhysObject(s.params.get("guid"));
@@ -86,7 +86,7 @@ public class winServersDisksDataCollect extends BatchJobTemplate implements Runn
 
 		gData.sqlReq.saveResult(insSql);
 
-		gData.saveToLog("all " + db_systems.size() + " finished successfuly.", params.get("job_name"));
+		gData.saveToLog("all " + servers.size() + " finished successfuly.", params.get("job_name"));
 
 	}
 
@@ -105,6 +105,23 @@ public class winServersDisksDataCollect extends BatchJobTemplate implements Runn
 
 		}
 
+		String SQL_result = "";
+
+		SQL_result += "insert into monitor_results ( ";
+		SQL_result += "`object_guid`,`monitor_number`,";
+		SQL_result += "`check_date`,`result_number`,";
+		SQL_result += "`result_text`,`is_error`) values (";
+		SQL_result += "'" + s.params.get("guid") + "',";
+		SQL_result += "" + params.get("job_number") + ",";
+		SQL_result += "now(),";
+		SQL_result += "" + s.params.get("result") + ",";
+		SQL_result += "'" + s.params.get("message") + "',";
+		SQL_result += "''";
+		SQL_result += ")";
+
+		gData.sqlReq.saveResult(SQL_result);
+		
+		
 //		gData.saveToLog("request =" + nscpClientLink + "\n" +  cleanJsonString, params.get("job_name"));		
 
 		return out;
@@ -170,7 +187,10 @@ public class winServersDisksDataCollect extends BatchJobTemplate implements Runn
 
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			gData.saveToLog(errors.toString(), params.get("job_name"));
+			
+			s.params.put("message",errors.toString());
+			
+			gData.saveToLog(s.params.get("ip") + " \n" + jsonString + "\n" + errors.toString(), params.get("job_name"));
 
 		}
 		return out;

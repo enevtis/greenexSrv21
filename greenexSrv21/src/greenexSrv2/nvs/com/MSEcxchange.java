@@ -3,12 +3,14 @@ package greenexSrv2.nvs.com;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.List;
 
 import microsoft.exchange.webservices.data.core.ExchangeService;
 import microsoft.exchange.webservices.data.core.enumeration.misc.ExchangeVersion;
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.credential.ExchangeCredentials;
 import microsoft.exchange.webservices.data.credential.WebCredentials;
+import microsoft.exchange.webservices.data.property.complex.FileAttachment;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
 
 public class MSEcxchange {
@@ -56,6 +58,8 @@ public class MSEcxchange {
 		        EmailMessage message = new EmailMessage(MSservice);
 		        message.setSubject(SubjectLetter);
 		        message.setBody(new MessageBody(BodyLetter));
+		        
+//		        message.getAttachments().addFileAttachment(fileName);
 
 				for(int i=0; i < fn.length; i++) {
 					komu += fn[i] + "!";
@@ -79,5 +83,85 @@ public class MSEcxchange {
 		
 		
 	}
+	public void sendOneLetter2 (List<String> recepients, String SubjectLetter, String BodyLetter, List<String> attFiles ) {
+		
+		boolean result = false;
+		
+		String komu = "";
+		
+		
+		
+		if (gData.commonParams.contains("mailSending")) {
+			
+				if (gData.commonParams.get("mailSending").equals("false")) {
+					String message = "";
+					message += " To=";
+					for (String r: recepients) {
+						message += r + ";";
+					}
+					message += " Subject=" + SubjectLetter;
+					message += " Body=" + BodyLetter;
+					gData.logger.info("E-mailing is disallowed: " + message);
+				return;
+				}
+			}
+		
+		   try {
+		        
+			   ExchangeService MSservice = null;
+			   MSservice = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
+
+			   MSservice.setUrl(new URI(gData.commonParams.get("MsExchangeWebLink")));
+		         
+
+		       String password = gData.getPasswordFromHash(gData.commonParams.get("MsExchangeHash")); 
+			   ExchangeCredentials credentials = new WebCredentials(gData.commonParams.get("MsExchangeUser"), password, gData.commonParams.get("MsExchangeDomain"));
+		        
+		         
+		         MSservice.setCredentials(credentials);
+
+		    	
+		        EmailMessage message = new EmailMessage(MSservice);
+		        message.setSubject(SubjectLetter);
+		        message.setBody(new MessageBody(BodyLetter));
+		        
+
+		        for(String re: recepients) {
+		        	message.getToRecipients().add(re);
+		        	
+		        	gData.logger.info("send to: " + re);
+		        	
+		        }
+		        
+//		        if (attFiles.size() > 0) {
+//		        	for(String attFile: attFiles) {
+//		        		message.getAttachments().addFileAttachment(attFile);		        	
+//		        	}
+//		        }
+		        
+
+		        
+		        String fileName = "/usr/nvs/greenex/img/111.png";
+		        FileAttachment f1= message.getAttachments().addFileAttachment(fileName);
+		        f1.setContentType("image");
+		        f1.setIsInline(true);
+		        f1.setContentId("111.png");
+		        
+		        gData.logger.info("attachment: " + fileName);
+		        
+		        message.send();
+
+		        gData.logger.info("Letter was send: address= " + komu + " subject=" + SubjectLetter + " body=" + BodyLetter );
+		        
+
+		   } catch (Exception e) {
+				StringWriter errors = new StringWriter();
+				e.printStackTrace(new PrintWriter(errors));
+				gData.logger.severe(errors.toString());
+		    }
+		
 	
+		
+		
+	}	
 }
