@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import greenexSrv2.nvs.com.MSEcxchange;
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
+import moni2.greenexSrv2.nvs.com.BatchJobTemplate;
 import obj.greenexSrv2.nvs.com.TblField;
 
 public class TestHandler extends HandlerTemplate {
@@ -65,23 +66,41 @@ public class TestHandler extends HandlerTemplate {
 
 		Map<String, String> sparams = new HashMap<String, String>();
 
-		out += getTestPage();
+		out += getTestPage2();
 
 		out += getEndPage();
 
 		return out;
 	}
 
-	public String getTestPage() {
+	public String getTestPage2() {
 		String out ="";
 	
+		List<String> object_guids = new ArrayList<String>();
+		
+//		object_guids.add("79be7fcf-85ef-45af-9c1a-998e2ad185fe");
+
+		
+		BatchJobTemplate bjt = new BatchJobTemplate(gData,params);
+		List<String> recepients= bjt.readRecepientsByProjects(object_guids);
+		
+		out += "recepients.size()=" + recepients.size();
+		
+		for(String s: recepients) {
+			
+			out += "<br>" + s;
+			
+		}
+		
+		
+		out += "<br>AAA";
 		
 		
 		
 		return out;
 	}
 
-/*	
+	
 	public String getTestPage1() {
 		String out = "";
 	
@@ -104,7 +123,44 @@ public class TestHandler extends HandlerTemplate {
 		return out;
 		
 	}
-*/	
+	public List<String> readRecepientsByProjects(List<String> object_guids) {
+		List<String> out = new ArrayList<String>();
+		String SQL = "";
+	
+		
+		String strGuids = "";
+		
+		if (object_guids.size() > 0) {
+			
+			for (String s : object_guids) {
+				strGuids += "'" + s + "',";
+			}
+		
+			strGuids = strGuids.substring(0, strGuids.length() - 1);
+			
+			SQL = "SELECT DISTINCT (email) FROM recepients WHERE object_guid IN ('all', " + strGuids + ") AND active='X'";
+		
+		} else {
+			
+			SQL = "SELECT DISTINCT (email) FROM recepients WHERE object_guid = 'all' AND active='X'";
+			
+		}
+		
+		gData.logger.info(SQL);
+		
+		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
+
+		if (records_list != null) {
+			if (records_list.size() > 0) {
+
+				for (Map<String, String> rec : records_list) {
+					out.add(rec.get("email"));
+				}
+			}
+		}
+
+		return out;
+	}	
 
 
 }

@@ -361,21 +361,31 @@ public class BatchJobTemplate {
 		return out;
 	}
 
-	protected List<String> readRecepientsByProjects(List<String> object_guids) {
+	public List<String> readRecepientsByProjects(List<String> object_guids) {
 		List<String> out = new ArrayList<String>();
 		String SQL = "";
-
-		SQL += "SELECT s1.* \n";
-		SQL += "FROM (SELECT DISTINCT CONCAT(object_guid,'-',monitor_number) AS guid_key,email FROM recepients ) AS s1 \n";
-		SQL += "WHERE ";
-		SQL += " s1.guid_key LIKE 'all%' \n";
-		SQL += "OR s1.guid_key IN (";
-		for (String s : object_guids) {
-			SQL += "'" + s + "',";
+	
+		
+		String strGuids = "";
+		
+		if (object_guids.size() > 0) {
+			
+			for (String s : object_guids) {
+				strGuids += "'" + s + "',";
+			}
+		
+			strGuids = strGuids.substring(0, strGuids.length() - 1);
+			
+			SQL = "SELECT DISTINCT (email) FROM recepients WHERE object_guid IN ('all', " + strGuids + ") AND active='X'";
+		
+		} else {
+			
+			SQL = "SELECT DISTINCT (email) FROM recepients WHERE object_guid = 'all' AND active='X'";
+			
 		}
-		SQL = SQL.substring(0, SQL.length() - 1);
-		SQL += ") \n";
-
+		
+		gData.logger.info(SQL);
+		
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
 		if (records_list != null) {
@@ -383,6 +393,8 @@ public class BatchJobTemplate {
 
 				for (Map<String, String> rec : records_list) {
 					out.add(rec.get("email"));
+					gData.logger.info("mail to:" + rec.get("email"));
+					
 				}
 			}
 		}
