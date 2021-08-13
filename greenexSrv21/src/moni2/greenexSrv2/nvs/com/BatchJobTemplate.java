@@ -25,7 +25,7 @@ public class BatchJobTemplate {
 	public String SQL = "";
 	public String SQL_for_list = "";
 	public String currJobName = "";
-	Map<String, String> params;
+	public Map<String, String> params;
 
 	public BatchJobTemplate(globalData gData, Map<String, String> params) {
 		this.gData = gData;

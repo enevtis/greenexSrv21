@@ -45,9 +45,6 @@ public class TechServiceScan extends BatchJobTemplate implements Runnable {
 
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
-		if (records_list != null) {
-			if (records_list.size() > 0) {
-
 				for (Map<String, String> rec : records_list) {
 
 					try {
@@ -87,8 +84,6 @@ public class TechServiceScan extends BatchJobTemplate implements Runnable {
 
 				gData.sqlReq.saveResult(sqlUpd);
 
-			}
-		}
 
 	}
 		

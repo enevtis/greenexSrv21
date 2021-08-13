@@ -27,6 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import graph.greenexSrv2.com.GraphDisk;
+import graph.greenexSrv2.com.PngDisksDiagramPainter;
 import greenexSrv2.nvs.com.MSEcxchange;
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
@@ -66,13 +68,26 @@ public class TestHandler extends HandlerTemplate {
 
 		Map<String, String> sparams = new HashMap<String, String>();
 
-		out += getTestPage2();
+		out += getTestPage3();
 
 		out += getEndPage();
 
 		return out;
 	}
 
+	public String getTestPage3() {
+		String out ="";
+		out = "Test!";
+		List<GraphDisk> disks = initDisks();
+		
+		PngDisksDiagramPainter dp = new PngDisksDiagramPainter();
+		dp.imgPath = gData.mainPath + File.separator + "img";
+		out += "<br>" + dp.imgPath;
+		out += "<br>" +dp.paintDisksDiagram(disks, "OPSBI");
+		
+		return out;
+	}
+	
 	public String getTestPage2() {
 		String out ="";
 	
@@ -161,6 +176,47 @@ public class TestHandler extends HandlerTemplate {
 
 		return out;
 	}	
+	public List<GraphDisk> initDisks() {
+		List<GraphDisk> out = new ArrayList();
 
+		GraphDisk d = new GraphDisk();
+		d.maxSizeGb = 60;
+		d.usedSizeGb = 55;
+//		d.minUsedSizeGb = 1;
+		d.path = "/";
+		out.add(d);
+		
+		d = new GraphDisk();
+		d.maxSizeGb = 1024;
+		d.usedSizeGb = 235;
+		d.path = "/usr/sap/";
+		out.add(d);
+
+		d = new GraphDisk();
+		d.maxSizeGb = 512;
+		d.usedSizeGb = 67;		
+		d.path = "/sapmnt/";
+		out.add(d);		
+
+		d = new GraphDisk();
+		d.maxSizeGb = 512;
+		d.usedSizeGb = 370;		
+		d.path = "/oracle/";
+		out.add(d);
+		
+		d = new GraphDisk();
+		d.maxSizeGb = 450;
+		d.usedSizeGb = 123;		
+		d.path = "/disk1/";
+		out.add(d);
+		
+		
+		d = new GraphDisk();
+		d.maxSizeGb = 220;
+		d.usedSizeGb = 1.5f;		
+		d.path = "/disk2/";
+		out.add(d);
+		return out;
+	}
 
 }

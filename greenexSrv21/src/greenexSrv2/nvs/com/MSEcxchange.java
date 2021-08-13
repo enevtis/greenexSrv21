@@ -1,8 +1,10 @@
 package greenexSrv2.nvs.com;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import microsoft.exchange.webservices.data.core.ExchangeService;
@@ -83,6 +85,11 @@ public class MSEcxchange {
 		
 		
 	}
+	public void sendOneLetter2 (List<String> recepients, String SubjectLetter, String BodyLetter ) {
+		
+		sendOneLetter2 (recepients, SubjectLetter, BodyLetter, new ArrayList<String>() );
+	}
+	
 	public void sendOneLetter2 (List<String> recepients, String SubjectLetter, String BodyLetter, List<String> attFiles ) {
 		
 		boolean result = false;
@@ -133,21 +140,19 @@ public class MSEcxchange {
 		        	
 		        }
 		        
-//		        if (attFiles.size() > 0) {
-//		        	for(String attFile: attFiles) {
-//		        		message.getAttachments().addFileAttachment(attFile);		        	
-//		        	}
-//		        }
+	
+		        if (attFiles.size() > 0) {
+		        	for(String attFile: attFiles) {
+		        		String fullPath = gData.mainPath + File.separator + "img" +
+		        				File.separator + attFile +".png";
+		        		
+		        		FileAttachment f1 = message.getAttachments().addFileAttachment(fullPath);
+		        		f1.setContentType("image");
+		        		f1.setIsInline(true);
+		        		f1.setContentId(attFile +".png");
+		        	}
+		        }
 		        
-
-		        
-		        String fileName = "/usr/nvs/greenex/img/111.png";
-		        FileAttachment f1= message.getAttachments().addFileAttachment(fileName);
-		        f1.setContentType("image");
-		        f1.setIsInline(true);
-		        f1.setContentId("111.png");
-		        
-		        gData.logger.info("attachment: " + fileName);
 		        
 		        message.send();
 

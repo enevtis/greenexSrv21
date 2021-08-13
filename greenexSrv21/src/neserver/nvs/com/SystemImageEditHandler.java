@@ -9,8 +9,8 @@ import java.util.Map;
 
 import javax.net.ssl.SSLSocket;
 
-import obj.greenexSrv2.nvs.com.GraphJsObject;
 import greenexSrv2.nvs.com.globalData;
+import obj.greenexSrv2.nvs.com.GraphJsObject;
 
 
 
