@@ -91,7 +91,9 @@ public class PngDisksDiagramPainter {
 
 					g.setPaint(Color.black);
 
-					String usedData = "" + usedPercent + "% (" + d.usedSizeGb + " from " + d.maxSizeGb + " Gb)";
+					String formatString = d.maxSizeGb < 300f ? "%.1f": "%.0f";
+					String usedData = "" + usedPercent + "% (" + String.format(formatString,d.usedSizeGb) 
+					+ " from " + String.format(formatString,d.maxSizeGb) + " Gb)";
 					String strLine = usedData + " " + d.path;
 					g.drawString(strLine, cLeft + 160, cTop + stepHeight - 4);
 				}

@@ -1,5 +1,10 @@
 package greenexSrv2.nvs.com;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +12,7 @@ import obj.greenexSrv2.nvs.com.ConnectionData;
 import obj.greenexSrv2.nvs.com.PhisObjProperties;
 import obj.greenexSrv2.nvs.com.SqlReturn;
 import obj.greenexSrv2.nvs.com.TblField;
+import java.util.logging.Logger;
 
 public class Utils {
 
@@ -256,5 +262,16 @@ public class Utils {
 
 		return out;
 	}
+public static boolean deleteFile(String pathToFile) {
+	boolean out = false;
+	
+	File file = new File(pathToFile);
+	try {
+		boolean result = Files.deleteIfExists(file.toPath());
+	} catch (IOException e) {
 
+	}
+	
+	return out;
+}
 }

@@ -90,7 +90,7 @@ public class MSEcxchange {
 		sendOneLetter2 (recepients, SubjectLetter, BodyLetter, new ArrayList<String>() );
 	}
 	
-	public void sendOneLetter2 (List<String> recepients, String SubjectLetter, String BodyLetter, List<String> attFiles ) {
+	public void sendOneLetter2 (List<String> recepients, String SubjectLetter, String BodyLetter, List<String> guidFiles ) {
 		
 		boolean result = false;
 		
@@ -141,15 +141,15 @@ public class MSEcxchange {
 		        }
 		        
 	
-		        if (attFiles.size() > 0) {
-		        	for(String attFile: attFiles) {
+		        if (guidFiles.size() > 0) {
+		        	for(String guidFile: guidFiles) {
 		        		String fullPath = gData.mainPath + File.separator + "img" +
-		        				File.separator + attFile +".png";
+		        				File.separator + guidFile +".png";
 		        		
 		        		FileAttachment f1 = message.getAttachments().addFileAttachment(fullPath);
 		        		f1.setContentType("image");
 		        		f1.setIsInline(true);
-		        		f1.setContentId(attFile +".png");
+		        		f1.setContentId(guidFile +".png");
 		        	}
 		        }
 		        

@@ -58,6 +58,10 @@ public class TechServiceScan extends BatchJobTemplate implements Runnable {
 
 						if (rec.get("action").equals("start")) {
 
+							String packageNameFromTable = rec.get("package");
+
+							packageName = packageNameFromTable.isEmpty() ? "moni2.greenexSrv2.nvs.com." : packageNameFromTable + ".";
+							
 							String className = packageName + rec.get("className");
 							Class cl = Class.forName(className);
 							Constructor cnstr = Class.forName(className)

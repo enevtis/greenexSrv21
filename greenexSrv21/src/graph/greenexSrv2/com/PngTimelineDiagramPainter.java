@@ -50,9 +50,9 @@ public class PngTimelineDiagramPainter {
 	}
 	public String paintTimeLineDiagram(List<GraphTimeValue> tValues, String caption) {
 		String out = "";
-//		out = UUID.randomUUID().toString();
+		out = UUID.randomUUID().toString();
 
-		out = "111";
+//		out = "111";
 		
 		BufferedImage img = new BufferedImage(pictureWidth, pictureHeight, BufferedImage.TYPE_INT_BGR);
 		stepRight = (int) ((float)(pictureWidth - BORDER_GAP * 2) / (float)tValues.size() -1 );
@@ -207,7 +207,8 @@ public class PngTimelineDiagramPainter {
 				g.setPaint(Color.black);
 				g.drawString(currentTime, BORDER_GAP, this.pictureHeight - 5);
 			}
-			File output = new File(imgPath + "\\" + out + ".png");
+			File output = new File(imgPath + File.separator + out + ".png");
+			
 			ImageIO.write(img, "png", output);
 		} catch (IOException log) {
 			System.out.println(log);

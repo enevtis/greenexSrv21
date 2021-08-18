@@ -1,11 +1,14 @@
 package neserver.nvs.com;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import greenexSrv2.nvs.com.MSEcxchange;
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
+import health.greenexSrv2.nvs.com.RegularOpsbiHealthReport2;
 import obj.greenexSrv2.nvs.com.TblField;
 
 public class Test2Handler extends HandlerTemplate {
@@ -41,13 +44,44 @@ public class Test2Handler extends HandlerTemplate {
 
 		Map<String, String> sparams = new HashMap<String, String>();
 
-		out += getOpsbiHealthReport();
+		out += getTestPage();
 
 		out += getEndPage();
 
 		return out;
 	}
 
+	
+	protected String getTestPage() {
+		String out = "";
+
+
+		Map<String, String> params = new HashMap<String, String>();
+		out += "Test 4";
+		RegularOpsbiHealthReport2 t1 = new RegularOpsbiHealthReport2(gData, params);
+		t1.imgPrefix = "cid:";
+		t1.run();
+		out += t1.body;
+		List<String> attFiles = t1.attFiles;
+		
+		MSEcxchange me = new MSEcxchange(gData);
+
+		List<String> recepients = new ArrayList<String>();
+		recepients.add("enevtis-x@aeroflot.ru");
+		
+		String commonSubjectLetter = "Test for ОПСБИАЙ";
+
+		String bodyLetter = t1.body;
+		
+		
+		me.sendOneLetter2(recepients, commonSubjectLetter, bodyLetter, attFiles);
+		
+		
+		out += "E-mail is send";
+		
+		
+		return out;
+	}
 	protected String getOpsbiHealthReport() {
 		String out = "";
 

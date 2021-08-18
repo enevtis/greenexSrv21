@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
@@ -32,6 +33,7 @@ import graph.greenexSrv2.com.PngDisksDiagramPainter;
 import greenexSrv2.nvs.com.MSEcxchange;
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
+import health.greenexSrv2.nvs.com.RegularOpsbiHealthReport2;
 import moni2.greenexSrv2.nvs.com.BatchJobTemplate;
 import obj.greenexSrv2.nvs.com.TblField;
 
@@ -68,13 +70,26 @@ public class TestHandler extends HandlerTemplate {
 
 		Map<String, String> sparams = new HashMap<String, String>();
 
-		out += getTestPage3();
+		out += getTestPage4();
 
 		out += getEndPage();
 
 		return out;
 	}
 
+	public String getTestPage4() {
+		String out = "";
+		Map<String, String> params = new HashMap<String, String>();
+		out += "Test 4";
+		RegularOpsbiHealthReport2 t1 = new RegularOpsbiHealthReport2(gData, params);
+		t1.imgPrefix = "/img/";
+		t1.run();
+		out += t1.body;
+
+		
+		return out;
+	}
+	
 	public String getTestPage3() {
 		String out ="";
 		out = "Test!";
@@ -82,8 +97,14 @@ public class TestHandler extends HandlerTemplate {
 		
 		PngDisksDiagramPainter dp = new PngDisksDiagramPainter();
 		dp.imgPath = gData.mainPath + File.separator + "img";
-		out += "<br>" + dp.imgPath;
-		out += "<br>" +dp.paintDisksDiagram(disks, "OPSBI");
+		
+		String fileName = dp.paintDisksDiagram(disks, "OPSBI") + ".png";
+
+		out += "<br>" + fileName;
+		out += "<br><img src='../img/" + fileName + "'>"; 
+		
+//		Utils.deleteFile(gData.mainPath + File.separator + "img" + File.separator + fileName);
+
 		
 		return out;
 	}
@@ -116,19 +137,32 @@ public class TestHandler extends HandlerTemplate {
 	}
 
 	
+
+	
+	
+	
 	public String getTestPage1() {
 		String out = "";
 	
+		List<GraphDisk> disks = initDisks();
+		
+		PngDisksDiagramPainter dp = new PngDisksDiagramPainter();
+		dp.imgPath = gData.mainPath + File.separator + "img";
+		
+		String fileGuid = dp.paintDisksDiagram(disks, "OPSBI");
+
+		
+		
 		MSEcxchange me = new MSEcxchange(gData);
 
 		List<String> recepients = new ArrayList<String>();
 		recepients.add("enevtis-x@aeroflot.ru");
 		List<String> attFiles = new ArrayList<String>();
-		attFiles.add(gData.mainPath + File.separator + "img" + File.separator + "111.png");
+		attFiles.add(fileGuid);
 		
 		String commonSubjectLetter = "Test for attachments";
 		String bodyLetter = "This is a <h1>body</h1>";
-		bodyLetter += "<img src='111.png'>";
+		bodyLetter += "<img src='cid:" + fileGuid + ".png'>";
 		
 		me.sendOneLetter2(recepients, commonSubjectLetter, bodyLetter, attFiles);
 		

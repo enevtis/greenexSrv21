@@ -2,6 +2,8 @@ package neserver.nvs.com;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -28,6 +30,16 @@ public class ImgHandler extends HandlerTemplate{
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			String pathToFile="/resources" + paramsString;
 			InputStream in = getClass().getResourceAsStream(pathToFile);
+			
+			if (in == null) {
+				
+				pathToFile=gData.mainPath + paramsString;
+				
+				File file = new File(pathToFile);
+				in = new FileInputStream(file);
+				
+			}
+			
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			
             int nRead;
