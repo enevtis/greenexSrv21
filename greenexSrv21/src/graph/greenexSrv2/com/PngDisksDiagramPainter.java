@@ -26,8 +26,8 @@ public class PngDisksDiagramPainter {
 
 	public int stepHeight = 14;
 	public int maxPercent = 85;
-	public int pictureWidth = 400;
-	public int indicatorWidth = 150;
+	public int pictureWidth = 450;
+	public int indicatorWidth = 120;
 	public boolean printLegend = true;
 	public boolean printTime = true;
 	public String imgPath = "";
@@ -95,7 +95,7 @@ public class PngDisksDiagramPainter {
 					String usedData = "" + usedPercent + "% (" + String.format(formatString,d.usedSizeGb) 
 					+ " from " + String.format(formatString,d.maxSizeGb) + " Gb)";
 					String strLine = usedData + " " + d.path;
-					g.drawString(strLine, cLeft + 160, cTop + stepHeight - 4);
+					g.drawString(strLine, cLeft + indicatorWidth + 3, cTop + stepHeight - 4);
 				}
 
 				cTop += stepHeight;

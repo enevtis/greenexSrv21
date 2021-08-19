@@ -14,6 +14,8 @@ import obj.greenexSrv2.nvs.com.PhisObjProperties;
 
 public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 
+	public String nowForSQL = "";
+	
 	public UnixDisksSpaceCheck(globalData gData, Map<String, String> params) {
 		super(gData, params);
 	}
@@ -22,6 +24,8 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 	public void run() {
 		try {
 
+			nowForSQL = gData.nowForSQL();
+			
 			setRunningFlag_shedule();
 			doCheck();
 			reSetRunningFlag_shedule();
@@ -90,13 +94,37 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 			 for(String line : lines) {
 	
 				 String[] parts = line.split("\\s+"); 
-				SQL_result = "insert into monitor_disks (";
-				SQL_result +="`server_guid`,`name`,`max_size_gb`,`used_size_gb`) values (";
-				SQL_result +="'" + s.params.get("guid") + "',";
-				SQL_result +="'" + parts[2] + "',";
-				SQL_result += parts[0] + ",";
-				SQL_result += parts[1] + ")";	
+//				SQL_result = "insert into monitor_disks (";
+//				SQL_result +="`server_guid`,`name`,`max_size_gb`,`used_size_gb`) values (";
+//				SQL_result +="'" + s.params.get("guid") + "',";
+//				SQL_result +="'" + parts[2] + "',";
+//				SQL_result += parts[0] + ",";
+//				SQL_result += parts[1] + ")";	
 
+				String diskName = parts[2];
+				String maxValue = parts[0];
+				String usedValue = parts[1];
+				
+				float fMaxValue = Float.valueOf(maxValue) / 1024 /1024 ;
+				float fUsedValue = Float.valueOf(usedValue) / 1024 /1024;
+
+				SQL_result = "insert into monitor_disks (";
+				SQL_result += "`server_guid`,";
+				SQL_result += "`name`,";
+				SQL_result += "`max_size_gb`,";
+				SQL_result += "`used_size_gb`,";
+				SQL_result += "`check_date`";
+				SQL_result += ") values (";
+				SQL_result += "'" + s.params.get("guid") + "',";
+				SQL_result += "'" + diskName + "',";
+				SQL_result += "" + String.format("%.1f", fMaxValue) + ",";
+				SQL_result += "" + String.format("%.1f", fUsedValue) + ",";
+				SQL_result += "'" + nowForSQL + "'";
+				SQL_result += ")";
+
+
+//				gData.saveToLog(SQL_result, params.get("job_name"));
+				
 				sqlList.add(SQL_result);
 				
 			 }
@@ -109,7 +137,8 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 			  SQL_result += "`result_text`,`is_error`) values ("; 
 			  SQL_result += "'" +  s.params.get("guid") + "',"; 
 			  SQL_result += "" + params.get("job_number") + ","; 
-			  SQL_result += "now(),"; 
+			  SQL += "'" + nowForSQL + "',";
+//			  SQL_result += "now(),"; 
 			  SQL_result += "0,";
 			  SQL_result += "'ok',"; 
 			  SQL_result += "''"; 

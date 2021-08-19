@@ -140,6 +140,8 @@ public class winServersDisksDataCollect extends BatchJobTemplate implements Runn
 			JSONArray lines = res.getJSONArray("lines");
 			JSONArray perf = lines.getJSONObject(0).getJSONArray("perf");
 
+			insSql.add("delete from monitor_disks where server_guid='" + s.params.get("guid") + "'");	
+			
 			for (int i = 0; i < perf.length(); i++) {
 
 				String alias = perf.getJSONObject(i).getString("alias");

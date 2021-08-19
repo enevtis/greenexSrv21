@@ -33,6 +33,7 @@ import graph.greenexSrv2.com.PngDisksDiagramPainter;
 import greenexSrv2.nvs.com.MSEcxchange;
 import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
+import health.greenexSrv2.nvs.com.RegularHealthDayReport;
 import health.greenexSrv2.nvs.com.RegularOpsbiHealthReport2;
 import moni2.greenexSrv2.nvs.com.BatchJobTemplate;
 import obj.greenexSrv2.nvs.com.TblField;
@@ -80,9 +81,11 @@ public class TestHandler extends HandlerTemplate {
 	public String getTestPage4() {
 		String out = "";
 		Map<String, String> params = new HashMap<String, String>();
-		out += "Test 4";
-		RegularOpsbiHealthReport2 t1 = new RegularOpsbiHealthReport2(gData, params);
+		params.put("job_name", "sirax_report");
+		params.put("caption", "SIRAX отчет");
+		RegularHealthDayReport t1 = new RegularHealthDayReport(gData, params);
 		t1.imgPrefix = "/img/";
+		t1.sendMail = false;
 		t1.run();
 		out += t1.body;
 

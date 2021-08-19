@@ -135,22 +135,6 @@ public class globalData {
 		String out = "";
 
 		return key;
-		
-//		String SQL = "select * from msg_text where `key` ='" + key + "'";
-//		SQL += " and `lang`='" + this.lang + "'";
-//		List<Map<String, String>> records = sqlReq.getSelect(SQL);
-//		
-//				for (Map<String, String> rec : records) {
-//					out = rec.get("trans");
-//				}
-//
-//				
-//			if (out.isEmpty()) {
-//				return key;
-//			} else {
-//				return out;
-//			}
-
 	}	
 	
 
