@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import greenexSrv2.nvs.com.MSEcxchange;
+import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
 
 public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
@@ -54,7 +55,13 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 
 	protected void sendLettersForNewProblems() {
 	
-		String SQL = "SELECT * FROM problems WHERE is_mailed <> 'X' AND is_fixed <> 'X'";
+
+		String SQL = "";
+		SQL += "SELECT a.*,b.short,c.job_descr FROM problems a ";
+		SQL += "LEFT JOIN v_objects_all b ON a.object_guid = b.guid ";
+		SQL += "LEFT JOIN monitor_schedule c ON a.monitor_number = c.number ";
+		SQL += "WHERE is_mailed <> 'X' AND is_fixed <> 'X'";
+		
 		
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 		List<String> object_guids = new ArrayList<>();
@@ -111,7 +118,14 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 	}
 	protected void sendLettersForRecoveredProblems() {
 		
-		String SQL = "SELECT * FROM problems WHERE is_mailed = 'X' AND is_fixed = 'X' AND is_recovery_mailing <> 'X'";
+		
+		String SQL = "";
+		SQL += "SELECT a.*,b.short,c.job_descr FROM problems a ";
+		SQL += "LEFT JOIN v_objects_all b ON a.object_guid = b.guid ";
+		SQL += "LEFT JOIN monitor_schedule c ON a.monitor_number = c.number ";
+		SQL += "WHERE is_mailed = 'X' AND is_fixed = 'X' AND is_recovery_mailing <> 'X'";	
+		
+		
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 		List<String> object_guids = new ArrayList<>();
 
@@ -120,7 +134,7 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 		
 		int counter = 0;
 
-		String subjectLetter = "Problem:";
+		String subjectLetter = "Recovery:";
 		
 		String bodyLetter = "";
 		String style = "";
@@ -155,6 +169,7 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 
 
 		bodyLetter += "</ul>";
+		bodyLetter += Utils.traceClassInMail(this.getClass().getSimpleName());
 		
 		////////// если есть записи , отправляем письмо.
 

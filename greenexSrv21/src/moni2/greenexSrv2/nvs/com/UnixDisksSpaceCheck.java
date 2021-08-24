@@ -137,7 +137,7 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 			  SQL_result += "`result_text`,`is_error`) values ("; 
 			  SQL_result += "'" +  s.params.get("guid") + "',"; 
 			  SQL_result += "" + params.get("job_number") + ","; 
-			  SQL += "'" + nowForSQL + "',";
+			  SQL_result += "'" + nowForSQL + "',";
 //			  SQL_result += "now(),"; 
 			  SQL_result += "0,";
 			  SQL_result += "'ok',"; 
@@ -154,7 +154,8 @@ public class UnixDisksSpaceCheck extends BatchJobTemplate implements Runnable {
 			  SQL_result +=  "`result_text`,`is_error`) values ("; 
 			  SQL_result += "'" +  s.params.get("guid") + "',"; 
 			  SQL_result += "" + params.get("job_number") +  ","; 
-			  SQL_result += "now(),"; 
+			  SQL_result += "'" + nowForSQL + "',";
+//			  SQL_result += "now(),"; 
 			  SQL_result += "0,"; 
 			  SQL_result += "'" +  s.params.get("result") + "',"; 
 			  SQL_result += "'X'"; 

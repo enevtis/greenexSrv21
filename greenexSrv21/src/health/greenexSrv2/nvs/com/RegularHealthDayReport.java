@@ -50,12 +50,31 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 
 	protected void doCheck() {
 
-		gData.truncateLog(getJobName());
+		String job_name = getJobName();
+		
+		gData.truncateLog(job_name);
 		attFiles.clear();
 
-		this.body += getUserInfo();
-		this.body += getFreeSpaceOnDiskDiagram();
-		this.body += getDatabaseGrowth();
+
+		body += "<style>";
+		body += Utils.getStyle();
+		body += "</style>";
+
+		body += getUserInfo();
+		body += getFreeSpaceOnDiskDiagram();
+		
+		ClusterHealth clh = new ClusterHealth(gData);
+		body += clh.getHPSG_status(job_name);
+		
+		body += clh.getReplication_status(job_name);
+		
+		DatabaseHealth dbh = new DatabaseHealth(gData);
+
+		body += dbh.getBackup_status(job_name);
+		
+		body += getDatabaseGrowth(job_name);
+		
+		
 		this.body += getBottomInfo();
 		
 		
@@ -88,7 +107,17 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 		String out = "";
 		out += "<p class='user_info'>";
 		out += "Отправлено с сервера " + gData.getOwnHostname();
-		out += " " + gData.getOwnIp();
+		out += " " + gData.getOwnIp() + " <br>";
+
+			String link = "";
+		
+		String monitorPort = gData.commonParams.get("webServicePort");
+		String monitorIp = gData.getOwnIp();
+
+		out += "<a href='https://" + monitorIp + ":" + monitorPort + "/rreports'>";
+		out += "актуальная версия отчета";
+		out += "</a> ";
+
 		out += "</p>"; 
 		return out;
 	}	
@@ -109,11 +138,8 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 
 		
 		
-		out += "<style>";
-		out += getStyle();
-		out += "</style>";
 
-		out += "<h3>Свободное место на дисках:</h3>";
+		out += "<p class='caption_item'>Свободное место на дисках:</p>";
 		out += "<table class='table1'>";
 
 		out += "<thead><tr>";
@@ -261,7 +287,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 		return out;
 	}
 
-	protected String getDatabaseGrowth() {
+	protected String getDatabaseGrowth(String job_name) {
 		String out = "";
 
 		List<String> guids = getListGuidsForJobName("db_growth");
@@ -270,7 +296,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 
 		int counter = 0;
 
-		out += "<h3>Рост базы данных за " + Utils.timeConvert(growthDays * 24 * 60) + ":</h3>";
+		out += "<p class='caption_item'>Рост базы данных за " + Utils.timeConvert(growthDays * 24 * 60) + "</p>";
 
 		out += "<table class='table1'>";
 		out += "<thead><tr>";
@@ -290,7 +316,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 
 			LocalDate finishDate = LocalDate.now();
 			LocalDate startDate = finishDate.minusDays(growthDays);
-			int diapDays = (int) ((float) growthDays / 20f);
+			int diapDays = (int) ((float) growthDays / 100f);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 			SQL += "SELECT MAX(s1.result_number) AS max_result, COUNT(*) AS counter,s1.groupdate, ";
@@ -346,44 +372,10 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 		out += "<tbody>";
 		out += "</table>";
 
-		gData.saveToLog(out, getJobName());
+		gData.saveToLog(out, job_name);
 
 		return out;
 	}
 
-	private String getStyle() {
-		String out = "";
 
-		out += ".table1 { \n";
-		out += "font-size: 90%; ";
-		out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
-		out += "border: 1px solid #399;  \n";
-		out += "border-spacing: 1px 1px;  \n";
-		out += "} \n";
-		out += ".table1 td { \n";
-		out += "background: #EFEFEF; \n";
-		out += "border: 1px solid #333; \n";
-		out += "padding: 0px;  \n";
-		out += "} \n";
-
-		out += " .table2 { \n";
-		out += "font-size: 70%;  \n";
-		out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
-		out += "border: 1px solid #399;  \n";
-		out += "border-spacing: 1px 1px;  \n";
-		out += "} \n";
-		out += ".table2 td { \n";
-		out += "background: #E0E0E0; \n";
-		out += "border: 1px solid #333; \n";
-		out += "padding: 0px;  \n";
-		out += "}";
-		
-		out += ".user_info{ \n";
-		out += "font-size: 70%;  \n";
-		out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
-		out += "font-style: italic; \n";
-		out += "}";
-
-		return out;
-	}
 }

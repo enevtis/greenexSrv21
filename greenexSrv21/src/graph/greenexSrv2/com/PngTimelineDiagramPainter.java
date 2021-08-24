@@ -32,6 +32,7 @@ public class PngTimelineDiagramPainter {
 	public String imgPath = "";
 	public String timeFormat = "dd-MM-yy";
 	public int maxIndex = -1;
+	public List<GraphTimeValue> currtValues;
 	
 	
 	private static final int BORDER_GAP = 60;
@@ -52,7 +53,7 @@ public class PngTimelineDiagramPainter {
 		String out = "";
 		out = UUID.randomUUID().toString();
 
-//		out = "111";
+		currtValues = tValues;
 		
 		BufferedImage img = new BufferedImage(pictureWidth, pictureHeight, BufferedImage.TYPE_INT_BGR);
 		stepRight = (int) ((float)(pictureWidth - BORDER_GAP * 2) / (float)tValues.size() -1 );
@@ -156,7 +157,7 @@ public class PngTimelineDiagramPainter {
 		    	  
 		    	// Format LocalDateTime
 		    	  String formattedDateTime = tValues.get(i).dateTime.format(formatter);
-		    	  drawRotate(g, cLeft, cTop + 5, 45, formattedDateTime);
+		    	  drawRotate(g, cLeft, cTop + 5, 45, formattedDateTime, i);
 		    	  
 		    	  } else {
 
@@ -170,7 +171,7 @@ public class PngTimelineDiagramPainter {
 			    	  g.setColor(Color.black);
 			    	  
 			    	  String formattedDateTime = tValues.get(i).dateTime.format(formatter);
-			    	  drawRotate(g, cLeft, cTop + 5, 45, formattedDateTime);		    		  
+			    	  drawRotate(g, cLeft, cTop + 5, 45, formattedDateTime, i);		    		  
 		    		  
 		    		  
 		    		  
@@ -219,9 +220,15 @@ public class PngTimelineDiagramPainter {
 	
 		return out;
 	}
-	public static void drawRotate(Graphics2D g2d, double x, double y, int angle, String text) 
+	public void drawRotate(Graphics2D g2d, double x, double y, int angle, String text, int index) 
 	{    
 	    
+		
+		if ( this.currtValues.size() > 25)  {
+			if ( index % 2 != 0 ) return;
+		}
+		
+		
 		Font currentFont = g2d.getFont();
 		Font newFont = currentFont.deriveFont(currentFont.getSize() * 0.8F);
 		g2d.setFont(newFont);

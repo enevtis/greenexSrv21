@@ -82,7 +82,7 @@ public class TestHandler extends HandlerTemplate {
 		String out = "";
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("job_name", "sirax_report");
-		params.put("caption", "SIRAX отчет");
+		params.put("caption", "TEST отчет");
 		RegularHealthDayReport t1 = new RegularHealthDayReport(gData, params);
 		t1.imgPrefix = "/img/";
 		t1.sendMail = false;

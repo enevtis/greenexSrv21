@@ -1,5 +1,14 @@
 package moni2.greenexSrv2.nvs.com;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +33,8 @@ public class HouseKeepingJob extends BatchJobTemplate implements Runnable{
 			setRunningFlag_regular();
 
 			deleteOldCheckResults();
+			
+			deleteOldImageFiles();
 
 			reSetRunningFlag_regular();
 			
@@ -94,101 +105,57 @@ public class HouseKeepingJob extends BatchJobTemplate implements Runnable{
 		};
 	}
 	
-//	private void markOldCheckResults() {
-//	
-//		
-//		Connection conn = null ;
-//		
-//		try {
-//
-//		      conn = DriverManager.getConnection(gData.commonParams.get("connectionString") , gData.commonParams.get("user") , gData.commonParams.get("password"));	
-//		      
-//		      	Statement stmt = conn.createStatement();
-//				String SQL = "";					
-//
-//				SQL += "select a.id from monitor_results a  ";
-//				SQL += "left join monitor_schedule b on a.monitor_number = b.number  ";
-//				SQL += "where DATEDIFF(CURDATE(),a.check_date) > b.keep_days  ";		
-//				
-//				ResultSet rs = stmt.executeQuery(SQL);
-//				String in_clause = "";
-//
-//				while (rs.next()) {
-//					in_clause += rs.getInt("id") + ",";
-//				}
-//
-//				in_clause = in_clause.substring(0, in_clause.length() - 1);
-//				
-//				SQL = "";
-//				SQL += "update monitor_results set is_alarm='D' where id in (" + in_clause + ")";				
-//				
-//				gData.logger.info(SQL);
-//				
-//				stmt.executeUpdate(SQL);
-//				
-//				
-//				conn.close();
-//				
-//		
-//		} catch (Exception e) {
-//
-//			StringWriter errors = new StringWriter();
-//			e.printStackTrace(new PrintWriter(errors));
-//			gData.logger.severe(errors.toString());
-//
-//		} finally {	
-//			try {
-//				conn.close();
-//			} catch (SQLException e) {
-//				StringWriter errors = new StringWriter();
-//				e.printStackTrace(new PrintWriter(errors));
-//				gData.logger.severe(errors.toString());
-//			}
-//		}
-//		
-//	}
-//	public boolean saveResult (List<String> sqlList) {
-//		boolean result = false;
-//		
-//		
-//		if (sqlList == null) return false;
-//		
-//		if (sqlList.size() == 0) return false;
-//		
-//		Connection conn = null ;
-//				
-//				try {
-//					
-//				      conn = DriverManager.getConnection(gData.commonParams.get("connectionString") , gData.commonParams.get("user") , gData.commonParams.get("password"));	
-//				      	
-//				      	for(String s: sqlList) {
-//				      		Statement stmt = conn.createStatement();
-//						    stmt.executeUpdate(s);
-//						}
-//
-//
-//						result = true;
-//				      	conn.close();
-//						
-//						
-//				
-//				} catch (Exception e) {
-//					result = false;
-//					StringWriter errors = new StringWriter();
-//					e.printStackTrace(new PrintWriter(errors));
-//					gData.logger.severe(errors.toString());
-//
-//				} finally {	
-//					try {
-//						conn.close();
-//					} catch (SQLException e) {
-//						result = false;
-//						StringWriter errors = new StringWriter();
-//						e.printStackTrace(new PrintWriter(errors));
-//						gData.logger.severe(errors.toString());
-//					}
-//				}
-//		
-//return result;
-//	}	
+	public void deleteOldImageFiles() {
+		String checkDirectory = gData.mainPath + File.separator + "img" + File.separator;
+		long daysAgeForDelete = 2;
+		List<String> filesList = new ArrayList();
+
+		File folder = new File(checkDirectory);
+
+		listFilesForFolder(folder, filesList, daysAgeForDelete);
+
+		for (String f : filesList) {
+
+			File file = new File(f);
+			if (file.delete()) {
+				gData.logger.info(f + " has been deleted after "+ daysAgeForDelete + " days");
+			} else {
+				gData.logger.info(" error deleting : " + f);
+			}
+		}
+
+	}
+	
+	public void listFilesForFolder(final File folder, List<String> filesList, long daysAge) {
+		for (final File fileEntry : folder.listFiles()) {
+			if (fileEntry.isDirectory()) {
+				listFilesForFolder(fileEntry, filesList, daysAge);
+			} else {
+
+				String fullName = fileEntry.getAbsolutePath();
+				Path file = Paths.get(fullName);
+
+				try {
+					BasicFileAttributes attr;
+					attr = Files.readAttributes(file, BasicFileAttributes.class);
+
+					LocalDateTime lastModified = LocalDateTime.ofInstant(attr.lastModifiedTime().toInstant(),
+							ZoneId.systemDefault());
+					LocalDateTime now = LocalDateTime.now();
+
+					long diff = ChronoUnit.DAYS.between(lastModified, now);
+					if (diff > daysAge) {
+						filesList.add(fullName);
+					}
+
+//    		System.out.println(fileEntry.getAbsolutePath() + " lastModifiedTime: " + lastModified + " past days=" + diff);
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
 }

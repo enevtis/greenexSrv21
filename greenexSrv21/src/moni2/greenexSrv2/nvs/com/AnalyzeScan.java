@@ -8,6 +8,7 @@ import java.util.Map;
 
 
 import greenexSrv2.nvs.com.MSEcxchange;
+import greenexSrv2.nvs.com.Utils;
 import greenexSrv2.nvs.com.globalData;
 
 public class AnalyzeScan extends BatchJobTemplate implements Runnable {
@@ -178,6 +179,7 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 		}
 
 		bodyLetter += "</ul>";
+		bodyLetter += Utils.traceClassInMail(this.getClass().getSimpleName());
 
 		////////// если есть записи , отправляем письмо.
 

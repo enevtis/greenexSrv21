@@ -125,6 +125,7 @@ public class globalData {
 		router.put("/test", pack + "TestHandler");
 		router.put("/test2", pack + "Test2Handler");
 		router.put("/idocs", pack + "IdocsPageHandler");
+		router.put("/rreports", pack + "RReportsPageHandler");
 		
 	}
 	

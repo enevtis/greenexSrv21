@@ -274,4 +274,96 @@ public static boolean deleteFile(String pathToFile) {
 	
 	return out;
 }
+
+public static String getStyleMessage(String color) {
+	String out = "";
+
+	if (color.equals("red")) {
+		
+		out += "color:red;";
+		out += "font-weight:bold;";
+		
+	} else {
+		out += "color:black;";
+		out += "font-weight:normal;";						
+	}
+	
+	
+	
+	return out;
+}
+public static String traceClassInMail(String className) {
+	String out = "";
+	
+	
+	out += "<p style='color:white'>" + className + "</p>";
+	
+	
+	
+	return out;
+}
+
+
+public static String getStyle() {
+	String out = "";
+
+	out += ".table2 { \n";
+	out += "font-size: 190%; ";
+	out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
+	out += "border: 1px solid #399;  \n";
+	out += "border-spacing: 1px 1px;  \n";
+	out += "} \n";
+
+	out += ".table2 tbody tr:nth-child(odd) { \n";
+	out += " background-color: #ff33cc; \n";
+	out += "border: 1px solid #333; \n";
+	out += "} \n";
+
+	out += ".table2 tbody tr:nth-child(even) { \n";
+	out += " background-color: #e495e4; \n";
+	out += "border: 1px solid #333; \n";
+	out += "} \n";
+
+	out += ".table1 { \n";
+	out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
+	out += "border: 1px solid #333; \n";
+	out += "border-spacing: 1px 1px; \n";
+	out += "border-collapse: collapse; \n";
+	out += "} \n";
+
+	out += ".table1 td { \n";
+	out += "border: 1px solid black; \n";
+	out += "} \n";
+/*
+	
+	out += " .table2 { \n";
+	out += "font-size: 70%;  \n";
+	out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
+	out += "border: 1px solid #399;  \n";
+	out += "border-spacing: 1px 1px;  \n";
+	out += "} \n";
+	out += ".table2 td { \n";
+	out += "background: #E0E0E0; \n";
+	out += "border: 1px solid #333; \n";
+	out += "padding: 0px;  \n";
+	out += "}";
+*/
+	out += ".user_info{ \n";
+	out += "font-size: 70%;  \n";
+	out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
+	out += "font-style: italic; \n";
+	out += "}";
+
+	out += ".caption_item{ \n";
+	out += "font-size: 70%;  \n";
+	out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
+	out += "font-style: italic; \n";
+	out += "font-weight: bold; \n";
+	out += "}";
+
+	out += ".ol_1{  \n";
+	out += "}";
+
+	return out;
+}
 }

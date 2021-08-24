@@ -123,7 +123,7 @@ public class HealthReportTemplate extends BatchJobTemplate implements Runnable {
 		String out = "";
 
 		out += "<style>";
-		out += getStyle();
+		out += Utils.getStyle();
 		out += "</style>";
 
 		out += "<table class='table1'>";
@@ -219,35 +219,8 @@ public class HealthReportTemplate extends BatchJobTemplate implements Runnable {
 		return out;
 	}
 
-	private String getStyle() {
-		String out = "";
 
-		out += ".table1 { \n";
-		out += "font-size: 90%; ";
-		out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
-		out += "border: 1px solid #399;  \n";
-		out += "border-spacing: 1px 1px;  \n";
-		out += "} \n";
-		out += ".table1 td { \n";
-		out += "background: #EFEFEF; \n";
-		out += "border: 1px solid #333; \n";
-		out += "padding: 0px;  \n";
-		out += "} \n";
 
-		out += " .table2 { \n";
-		out += "font-size: 70%;  \n";
-		out += "font-family: Verdana, Arial, Helvetica, sans-serif;  \n";
-		out += "border: 1px solid #399;  \n";
-		out += "border-spacing: 1px 1px;  \n";
-		out += "} \n";
-		out += ".table2 td { \n";
-		out += "background: #E0E0E0; \n";
-		out += "border: 1px solid #333; \n";
-		out += "padding: 0px;  \n";
-		out += "}";
-
-		return out;
-	}
 
 	private String getJournalName() {
 		return this.getClass().asSubclass(this.getClass()).getSimpleName();
