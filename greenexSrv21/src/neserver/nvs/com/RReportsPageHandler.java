@@ -18,7 +18,7 @@ public class RReportsPageHandler extends HandlerTemplate {
 		String out = "";
 		String curStyle = "";
 
-		int userRight = Utils.determineUserRights(gData, "connect_data", gData.commonParams.get("currentUser"));
+		int userRight = Utils.determineUserRights(gData, this.getClass().getSimpleName(), gData.commonParams.get("currentUser"));
 		if (userRight < 1) {
 
 			out += "Sorry, you don't have necessary authorisation! Недостаточно полномочий.";

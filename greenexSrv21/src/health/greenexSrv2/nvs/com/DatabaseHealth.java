@@ -20,7 +20,7 @@ public class DatabaseHealth extends HealthTemplate{
 		List<String> guids = getListGuidsForJobName("backup", reportName);
 		if (guids.size() == 0)
 			return "";
-		out += "<p class='caption_item'>Статус бэкапа:</p>";
+		out += "<p class='caption_item'>" + gData.tr("f874771b-1255-46c0-ac91-a4d22397d14e") +":</p>";
 		out += "<ul class='ol_1'>";
 		for (String guid: guids){		
 			out += "<li>" + checkHealthBackup(guid);		
@@ -57,20 +57,20 @@ public class DatabaseHealth extends HealthTemplate{
 			String color = rec.get("status_color");
 			String fontWeight = color.equals("red") ? "bold" : "normal";
 			out += "<p style='" + Utils.getStyleMessage(color) + "'>";
-			out += "бэкап " + rec.get("db_type")  + " " + rec.get("short") + " " + rec.get("work_status");
-			out += ": Последний бэкап был " ; 
+			out += "" + gData.tr("184ec0a1-ecd5-4aad-9fe2-1f5161c7664f") + " " + rec.get("db_type")  + " " + rec.get("short") + " " + rec.get("work_status");
+			out += ": "+ gData.tr("0086e171-bd29-4217-be59-88b6ae6268db") +" " ; 
 
 			int pastMinutesAfterBackup = (int)(Float.valueOf(rec.get("result_number")) * 60);
 
 			out += "" + Utils.timeConvert(pastMinutesAfterBackup) + " назад ";
 			
 			if (color.equals("red")){
-			 out += " что больше лимита " + rec.get("value_limit") + " час.";			
+			 out += " " + gData.tr("b6542d16-9f82-47f2-a644-12feff1bb6c5") + " " + rec.get("value_limit") + " " + gData.tr("be46ab5f-8f47-46b2-ba5c-40ec682ee489") +".";			
 			} else {
-			 out += " что меньше лимита " + rec.get("value_limit") + " час.";				
+			 out += " " + gData.tr("ad531450-79e4-4019-8a1c-9ca101e6964b") + " " + rec.get("value_limit") + " " + gData.tr("be46ab5f-8f47-46b2-ba5c-40ec682ee489") +".";				
 			}
 
-			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes"))) + " назад)";
+			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes"))) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82") + ")";
 			out += "</p>";
 
 		}

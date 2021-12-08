@@ -16,4 +16,5 @@ public class PhisObjProperties {
 	public String DB = "";
 	public String APP = "";
 	public String project = "";
+	public String projectGuid = "";
 }

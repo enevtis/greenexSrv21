@@ -15,6 +15,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
+import greenexSrv2.nvs.com.ObjectParametersReader;
 import greenexSrv2.nvs.com.globalData;
 import moni.greenexSrv2.nvs.com.remoteSystem;
 import obj.greenexSrv2.nvs.com.ConnectionData;
@@ -214,7 +215,7 @@ public class BatchJobTemplate {
 
 			StringWriter errors = new StringWriter();
 			e.printStackTrace(new PrintWriter(errors));
-			gData.logger.severe("<p stype='color:red;'> ip=" + conData.ip + " user=" + conData.user 
+			gData.logger.severe("<p stype='color:red;'> ip=" + conData.ip + " user=" + conData.user
 					+ " gave an connect error" + errors.toString() + "<br>" + remoteSshText + "</p>");
 			s.params.put("result", errors.toString());
 			out = false;
@@ -361,31 +362,63 @@ public class BatchJobTemplate {
 		return out;
 	}
 
+	public String getProjectsFromGuidesList(List<String> object_guids) {
+		String out = "";
+		
+		List<String> projects = new ArrayList<>();
+
+		
+		for(String guid: object_guids) {
+		
+			ObjectParametersReader parReader = new ObjectParametersReader(gData);
+			PhisObjProperties pr = parReader.getParametersPhysObject(guid);
+
+			if (!projects.contains(pr.projectGuid)) {
+				projects.add(pr.projectGuid);
+			}
+		
+		}
+		
+		
+		for(String p: projects) {		
+			out += "'" + p + "',";
+		}
+		
+		out = out.substring(0, out.length() - 1);
+		
+		gData.logger.info("projects for recepients: " + out);
+
+		return out;
+	}
+
 	public List<String> readRecepientsByProjects(List<String> object_guids) {
 		List<String> out = new ArrayList<String>();
 		String SQL = "";
-	
-		
-		String strGuids = "";
-		
+
+		String strGuids = "", strProjects = "";
+
 		if (object_guids.size() > 0) {
-			
+
 			for (String s : object_guids) {
 				strGuids += "'" + s + "',";
 			}
-		
+
 			strGuids = strGuids.substring(0, strGuids.length() - 1);
-			
-			SQL = "SELECT DISTINCT (email) FROM recepients WHERE object_guid IN ('all', " + strGuids + ") AND active='X'";
-		
+
+			strProjects = getProjectsFromGuidesList(object_guids);
+
+			SQL = "SELECT DISTINCT (email) FROM recepients WHERE object_guid IN ('all', " + strGuids  + ") AND active='X' ";
+			SQL += " UNION ";
+			SQL += "SELECT DISTINCT (email) FROM recepients WHERE project_guid IN (" + strProjects + ") AND active='X'";
+
 		} else {
-			
+
 			SQL = "SELECT DISTINCT (email) FROM recepients WHERE object_guid = 'all' AND active='X'";
-			
+
 		}
-		
-		gData.logger.info(SQL);
-		
+
+		gData.logger.info("SQL for recepients " + SQL);
+
 		List<Map<String, String>> records_list = gData.sqlReq.getSelect(SQL);
 
 		if (records_list != null) {
@@ -394,7 +427,7 @@ public class BatchJobTemplate {
 				for (Map<String, String> rec : records_list) {
 					out.add(rec.get("email"));
 					gData.logger.info("mail to:" + rec.get("email"));
-					
+
 				}
 			}
 		}
@@ -448,30 +481,38 @@ public class BatchJobTemplate {
 
 	protected boolean setRunningFlag_shedule() {
 		boolean out = false;
-		
-		gData.sqlReq.saveResult("update monitor_schedule set running='X',last_start=now() where id=" + params.get("job_id"));
-		
+
+		gData.sqlReq.saveResult(
+				"update monitor_schedule set running='X',last_start=now() where id=" + params.get("job_id"));
+
 		return out;
 	}
+
 	protected boolean reSetRunningFlag_shedule() {
 		boolean out = false;
 		List<String> sqlList = new ArrayList<String>();
-		gData.sqlReq.saveResult("update monitor_schedule set running='',last_analyze=now(),checks_analyze=checks_analyze+1 where id=" + params.get("job_id"));
-		
+		gData.sqlReq.saveResult(
+				"update monitor_schedule set running='',last_analyze=now(),checks_analyze=checks_analyze+1 where id="
+						+ params.get("job_id"));
+
 		return out;
 	}
+
 	protected boolean setRunningFlag_regular() {
 		boolean out = false;
-		
-		gData.sqlReq.saveResult("update regular_schedule set running='X',last_start=now() where id=" + params.get("job_id"));
-		
+
+		gData.sqlReq.saveResult(
+				"update regular_schedule set running='X',last_start=now() where id=" + params.get("job_id"));
+
 		return out;
 	}
+
 	protected boolean reSetRunningFlag_regular() {
 		boolean out = false;
-		gData.sqlReq.saveResult("update regular_schedule set running='',last_run_date=now(), counter=counter+1 where id=" + params.get("job_id"));
+		gData.sqlReq
+				.saveResult("update regular_schedule set running='',last_run_date=now(), counter=counter+1 where id="
+						+ params.get("job_id"));
 
-		
 		return out;
 	}
 }

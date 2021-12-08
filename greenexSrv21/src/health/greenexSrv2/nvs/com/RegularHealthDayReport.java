@@ -98,15 +98,14 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 	protected String getUserInfo() {
 		String out = "";
 		out += "<p class='user_info'>";
-		out += "Это автоматический отчет мониторинга ключевых параметров системы. ";
-		out += "Красный цвет (при наличии) указывает на проблемы.";
+		out += gData.tr("343787d5-25c7-4598-a12e-4c8b6cb69951");
 		out += "</p>";
 		return out;
 	}
 	protected String getBottomInfo() {
 		String out = "";
 		out += "<p class='user_info'>";
-		out += "Отправлено с сервера " + gData.getOwnHostname();
+		out += gData.tr("bb064147-2d3c-4451-80c6-4183202b00a7") + " " + gData.getOwnHostname();
 		out += " " + gData.getOwnIp() + " <br>";
 
 			String link = "";
@@ -115,7 +114,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 		String monitorIp = gData.getOwnIp();
 
 		out += "<a href='https://" + monitorIp + ":" + monitorPort + "/rreports'>";
-		out += "актуальная версия отчета";
+		out += gData.tr("2d35d54a-8d63-4e94-a667-d217e659ca8e");
 		out += "</a> ";
 
 		out += "</p>"; 
@@ -139,7 +138,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 		
 		
 
-		out += "<p class='caption_item'>Свободное место на дисках:</p>";
+		out += "<p class='caption_item'>" + gData.tr("9c01211b-57d6-444f-a0e6-1d5f78ee9657") +":</p>";
 		out += "<table class='table1'>";
 
 		out += "<thead><tr>";
@@ -148,7 +147,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 		out += "<th>hostname</th>";
 		out += "<th>os</th>";
 		out += "<th>role</th>";
-		out += "<th>место на дисках</th>";
+		out += "<th>" + gData.tr("bfcad6d9-4bbe-4a1b-b49e-33a2e9bb980f") +"</th>";
 		out += "</tr></thead>";
 
 		out += "<tbody>";
@@ -296,13 +295,13 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 
 		int counter = 0;
 
-		out += "<p class='caption_item'>Рост базы данных за " + Utils.timeConvert(growthDays * 24 * 60) + "</p>";
+		out += "<p class='caption_item'>" + gData.tr("8d73fe2e-dff8-4944-a658-68f583c00baa") + " " + Utils.timeConvert(growthDays * 24 * 60) + "</p>";
 
 		out += "<table class='table1'>";
 		out += "<thead><tr>";
-		out += "<th>п/п</th>";
-		out += "<th>описание</th>";
-		out += "<th>объем в Гб</th>";
+		out += "<th>" + gData.tr("77afa40e-b523-4cb3-8b70-9d7159d1cdcb") + "</th>";
+		out += "<th>" + gData.tr("69cb73ae-4d53-4b4f-9eb4-396428e4b7d2") + "</th>";
+		out += "<th>" + gData.tr("8eb3e582-d051-490c-b33c-c3259ef48fc3") + "</th>";
 		out += "</tr></thead>";
 
 		out += "<tbody>";
@@ -362,7 +361,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 			out += "<td>" + counter + "</td>";
 			out += "<td>" + linkToDashboard(guid, description) + "</td>";
 
-			String fileGuid = dp.paintTimeLineDiagram(list, "Размер базы данных (Гб)");
+			String fileGuid = dp.paintTimeLineDiagram(list, gData.tr("8d066870-d020-468a-880a-ecea5f31a7e4"));
 			attFiles.add(fileGuid);
 
 			out += "<td><img src='" + imgPrefix + fileGuid + ".png'></td>";

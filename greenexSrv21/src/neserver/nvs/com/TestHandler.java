@@ -57,7 +57,7 @@ public class TestHandler extends HandlerTemplate {
 		String out = "";
 		String curStyle = "";
 
-		int userRight = Utils.determineUserRights(gData, "connect_data", gData.commonParams.get("currentUser"));
+		int userRight = Utils.determineUserRights(gData, this.getClass().getSimpleName(), gData.commonParams.get("currentUser"));
 		if (userRight < 1) {
 
 			out += "Sorry, you don't have necessary authorisation! Недостаточно полномочий.";
@@ -80,15 +80,27 @@ public class TestHandler extends HandlerTemplate {
 
 	public String getTestPage4() {
 		String out = "";
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("job_name", "sirax_report");
-		params.put("caption", "TEST отчет");
-		RegularHealthDayReport t1 = new RegularHealthDayReport(gData, params);
-		t1.imgPrefix = "/img/";
-		t1.sendMail = false;
-		t1.run();
-		out += t1.body;
+		String objs = params.get("objs");
+		String[] inGuids = objs.split(":");
+		List<String> guids = new ArrayList<String>();
+		
+		for(int i=0; i < inGuids.length; i++) {
+			guids.add(inGuids[i]);
+		}
+		
+		Map<String, String> par1 = new HashMap<String, String>();
+		BatchJobTemplate bjt = new BatchJobTemplate(gData,par1);
+		
+		
+		List<String> recepients = bjt.readRecepientsByProjects(guids);
+		
 
+		for(String r: recepients) {
+			
+			out += r + "<br>";
+			
+		}
+		
 		
 		return out;
 	}

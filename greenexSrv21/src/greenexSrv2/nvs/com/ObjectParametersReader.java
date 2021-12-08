@@ -133,7 +133,7 @@ public class ObjectParametersReader {
 						if (descr.contains("AIX"))	out.OS = "AIX";			
 						if (descr.contains("WIND")) out.OS = "WINDOWS";	
 						
-						SQL = "SELECT b.short FROM servers a ";
+						SQL = "SELECT b.guid,b.short FROM servers a ";
 						SQL += " LEFT JOIN projects b ON a.project_guid = b.guid";
 						SQL += " WHERE a.guid='" + checkedPhysGuid  + "'";
 	
@@ -141,7 +141,9 @@ public class ObjectParametersReader {
 						
 						for (Map<String, String> rec2 : records2) {
 							
+							out.projectGuid = rec2.get("guid");
 							out.project = rec2.get("short");
+							
 						}						
 						
 					break;
@@ -153,7 +155,7 @@ public class ObjectParametersReader {
 						else if (descr.contains("MSSQL"))	out.DB = "MSSQL";			
 						else if (descr.contains("MYSQL")) out.DB = "MYSQL";							
 						
-						SQL = "SELECT b.short FROM db_systems a ";
+						SQL = "SELECT b.guid,b.short FROM db_systems a ";
 						SQL += " LEFT JOIN projects b ON a.project_guid = b.guid";
 						SQL += " WHERE a.guid='" + checkedPhysGuid  + "'";
 
@@ -161,6 +163,7 @@ public class ObjectParametersReader {
 						
 						for (Map<String, String> rec2 : records2) {
 							
+							out.projectGuid = rec2.get("guid");
 							out.project = rec2.get("short");
 						}
 						
@@ -170,7 +173,7 @@ public class ObjectParametersReader {
 						if(descr.contains("SAP") && descr.contains("NW")) out.APP = "SAPNW";
 						else if(descr.contains("SAP") && descr.contains("WEAVER")) out.APP = "SAPNW";					
 
-						SQL = "SELECT b.short FROM app_systems a ";
+						SQL = "SELECT b.guid,b.short FROM app_systems a ";
 						SQL += " LEFT JOIN projects b ON a.project_guid = b.guid";
 						SQL += " WHERE a.guid='" + checkedPhysGuid  + "'";
 						
@@ -178,6 +181,7 @@ public class ObjectParametersReader {
 						
 						for (Map<String, String> rec2 : records2) {
 							
+							out.projectGuid = rec2.get("guid");
 							out.project = rec2.get("short");
 						}
 						

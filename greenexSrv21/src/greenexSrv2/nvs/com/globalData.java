@@ -132,10 +132,20 @@ public class globalData {
 	
 	
 	
-	public String tr(String key) {
+	public String tr(String guid) {
 		String out = "";
 
-		return key;
+		
+		String SQL = "select `text` from inttxt where guid='" + guid + "'";
+		SQL += " and lang='" + this.lang + "'";
+
+		List<Map<String, String>> records = sqlReq.getSelect(SQL);
+
+		for (Map<String, String> rec : records) {
+			out = rec.get("text");
+		}
+
+		return out;
 	}	
 	
 

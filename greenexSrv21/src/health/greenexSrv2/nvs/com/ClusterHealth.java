@@ -20,7 +20,7 @@ public class ClusterHealth extends HealthTemplate{
 		List<String> guids = getListGuidsForJobName("hpsg", reportName);
 		if (guids.size() == 0)
 			return "";
-		out += "<p class='caption_item'>Статус кластера HP Service guard:</p>";
+		out += "<p class='caption_item'>" + gData.tr("9530396f-217a-43b1-83c7-86f26ea490bd") + ":</p>";
 		out += "<ul class='ol_1'>";
 		for (String guid: guids){		
 			out += "<li>" + checkHealthHPSG(guid);		
@@ -35,7 +35,7 @@ public class ClusterHealth extends HealthTemplate{
 		if (guids.size() == 0)
 			return "";
 		
-		out += "<p class='caption_item'>Статус репликации:</p>";
+		out += "<p class='caption_item'>" + gData.tr("1d8a6b92-12ad-4460-a895-99d0e3aef2bf") + ":</p>";
 		out += "<ul class='ol_1'>";
 		for (String guid: guids){		
 			
@@ -77,9 +77,9 @@ public class ClusterHealth extends HealthTemplate{
 
 			String color = rec.get("status_color");
 			out += "<p color='" + color + "'>";
-			out += "репликация на ";
+			out +=  gData.tr("98b510de-a0c2-45af-9f79-3ee6eb24ed4d") + " ";
 			out += rec.get("db_type")  + " " + rec.get("short") + ": " + rec.get("work_status");
-			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes"))) + " назад)";
+			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes"))) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82") + ")";
 			out += "</p>";
 
 		}
@@ -110,9 +110,9 @@ public class ClusterHealth extends HealthTemplate{
 
 			String color = rec.get("status_color");
 			out += "<p color='" + color + "'>";
-			out += "HP Service guarg на ";
+			out += "HP Service guarg on ";
 			out += rec.get("def_hostname") + ": " + rec.get("work_status");
-			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes"))) + " назад)";
+			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes"))) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82") + ")";
 			out += "</p>";
 
 		}
