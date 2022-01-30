@@ -249,7 +249,7 @@ public void sendNewProblemLetters() {
 		if (gData.commonParams.containsKey("mailSending")) {
 			if (gData.commonParams.get("mailSending").equals("true")) {
 
-				me.sendOneLetter(recepientsAll, subject, bodyLetter);
+				me.sendOneLetter(recepientsAll, subject, this.getClass().getSimpleName() + " " + bodyLetter);
 				
 				gData.saveToLog("SEND LETTER " + subject + " " + bodyLetter, this.getClass().getSimpleName());
 				

@@ -88,7 +88,7 @@ public class RegularOpsbiHealthReport2 extends HealthReportTemplate implements R
 		guids.add("9178d683-0fad-4477-aac8-145099e7d467");	//PDS
 		
 		
-		this.body += "<h3>"+gData.tr("8d73fe2e-dff8-4944-a658-68f583c00baa")+" " + Utils.timeConvert(growthDays * 24 * 60) + ":</h3>";
+		this.body += "<h3>"+gData.tr("8d73fe2e-dff8-4944-a658-68f583c00baa")+" " + Utils.timeConvert(growthDays * 24 * 60,gData.lang) + ":</h3>";
 		this.body += getDatabaseGrowth(guids, attFiles);
 		
 
@@ -101,7 +101,7 @@ public class RegularOpsbiHealthReport2 extends HealthReportTemplate implements R
 		List<String> recepients = readAllRecepients(params.get("job_name"));
 		
 		
-		me.sendOneLetter2(recepients, gData.tr("e8187450-2468-420a-a105-39516931207a"), body, attFiles);
+		me.sendOneLetter2(recepients, gData.tr("e8187450-2468-420a-a105-39516931207a"), this.getClass().getSimpleName() + " " + body, attFiles);
 		
 		gData.saveToLog("Email is send", getJobName());
 		

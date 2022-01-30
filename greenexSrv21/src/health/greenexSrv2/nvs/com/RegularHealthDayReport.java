@@ -87,7 +87,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 			List<String> recepients = readAllRecepients(params.get("job_name"));
 
 			String caption = params.containsKey("caption") ? params.get("caption") : "Регулярный отчет " + getJobName();
-			me.sendOneLetter2(recepients, caption, body, attFiles);
+			me.sendOneLetter2(recepients, caption, this.getClass().getSimpleName() + " " + body, attFiles);
 
 		}
 
@@ -201,7 +201,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 				disks.add(d);
 
 			}
-			String past_time = Utils.timeConvert(pastMinutes) + " назад";
+			String past_time = Utils.timeConvert(pastMinutes,gData.lang) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82");
 			PngDisksDiagramPainter dp = new PngDisksDiagramPainter();
 			dp.imgPath = gData.mainPath + File.separator + "img";
 			String fileGuid = dp.paintDisksDiagram(disks, past_time);
@@ -295,7 +295,7 @@ public class RegularHealthDayReport extends HealthReportTemplate implements Runn
 
 		int counter = 0;
 
-		out += "<p class='caption_item'>" + gData.tr("8d73fe2e-dff8-4944-a658-68f583c00baa") + " " + Utils.timeConvert(growthDays * 24 * 60) + "</p>";
+		out += "<p class='caption_item'>" + gData.tr("8d73fe2e-dff8-4944-a658-68f583c00baa") + " " + Utils.timeConvert(growthDays * 24 * 60,gData.lang) + "</p>";
 
 		out += "<table class='table1'>";
 		out += "<thead><tr>";

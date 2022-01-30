@@ -173,7 +173,7 @@ public class Test2Handler extends HandlerTemplate {
 			buffer += rec.get("max_size_gb") + " Гб.) ";
 			int pastMinutes = Integer.valueOf(rec.get("past_minutes"));
 			
-			buffer += " Последняя проверка была: " + Utils.timeConvert(pastMinutes) + " назад";
+			buffer += " Последняя проверка была: " + Utils.timeConvert(pastMinutes,gData.lang) + " назад";
 
 			out += "<td style='color:" + rec.get("color") + ";'>" + buffer + "</td>";
 			out += "</tr>";

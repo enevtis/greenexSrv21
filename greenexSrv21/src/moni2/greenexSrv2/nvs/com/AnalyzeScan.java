@@ -139,8 +139,14 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 						bodyLetter += "</a> ";						
 						bodyLetter += rec.get("details") + " ";
 						bodyLetter += rec.get("job_descr") + " ";
-						bodyLetter += "новое значение: " + rec.get("fixed_result") + " ";
-						bodyLetter += "лимит " + rec.get("fixed_limit") + " ";
+
+						bodyLetter += "AnalyzeScan:sendLetters:recover_letter" + " ";
+						
+						bodyLetter += rec.get("job_descr_guid") + " ";
+						
+						bodyLetter += gData.tr(rec.get("job_descr_guid")) + " ";
+						bodyLetter += gData.tr("f35b8f86-ec8b-44a7-a197-e86181bb36d1") + ": " + rec.get("fixed_result") + " ";
+						bodyLetter += gData.tr("51dea9da-58ba-4796-baa2-307763c167c8") +" " + rec.get("fixed_limit") + " ";
 
 						String updSQL = "update `problems` set `is_last_mailing`='X',last_mailing=NOW(),";
 						updSQL += "is_recovery_mailing ='X',recovery_mailing=NOW() ";
@@ -163,8 +169,15 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 
 						bodyLetter += rec.get("details") + " ";
 						bodyLetter += rec.get("job_descr") + " ";
-						bodyLetter += "превышение : " + rec.get("result_number") + " ";
-						bodyLetter += "лимит " + rec.get("value_limit") + " ";
+
+						bodyLetter += "AnalyzeScan:sendLetters:create_alert" + " ";
+						
+						bodyLetter += rec.get("job_descr_guid") + " ";
+						
+						bodyLetter += gData.tr(rec.get("job_descr_guid")) + " ";
+						bodyLetter += gData.tr("df3298d7-c6ac-4d3b-bb71-0880538bdd55") + ": " + rec.get("result_number") + " ";
+						bodyLetter += gData.tr("51dea9da-58ba-4796-baa2-307763c167c8") + " " + rec.get("value_limit") + " ";
+
 						bodyLetter += "<br> <i>" + rec.get("description") + "</i> ";
 						
 						String updSQL = "update `problems` set `is_mailed`= 'X',  mailed=NOW()";
@@ -208,10 +221,10 @@ public class AnalyzeScan extends BatchJobTemplate implements Runnable {
 			if (gData.commonParams.containsKey("mailSending")) {
 				if (gData.commonParams.get("mailSending").equals("true")) {
 
-					me.sendOneLetter(recepientsAll, commonSubjectLetter, bodyLetter);
+					me.sendOneLetter(recepientsAll, commonSubjectLetter, this.getClass().getSimpleName() + " " + bodyLetter);
 
 				} else {
-					gData.logger.info("MailNotificator is disallowed...");
+					gData.logger.info("MailNotificator is disallowed ...");
 				}
 			}
 

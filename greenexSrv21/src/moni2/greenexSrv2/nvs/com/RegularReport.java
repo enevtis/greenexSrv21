@@ -99,7 +99,7 @@ public class RegularReport extends BatchJobTemplate implements Runnable {
 
 			int pastHours = Integer.valueOf(rec.get("past_hours"));
 			
-			repTxt += "<td>" + Utils.timeConvert(pastHours * 60) + "</td>";			
+			repTxt += "<td>" + Utils.timeConvert(pastHours * 60,gData.lang) + "</td>";			
 			
 			repTxt += "</tr>";
 
@@ -146,7 +146,7 @@ public class RegularReport extends BatchJobTemplate implements Runnable {
 
 			int pastMinuts = Integer.valueOf(rec.get("past_min"));
 			
-			repTxt += "<td>" + Utils.timeConvert(pastMinuts) + "</td>";			
+			repTxt += "<td>" + Utils.timeConvert(pastMinuts,gData.lang) + "</td>";			
 
 			
 			repTxt += "</tr>";

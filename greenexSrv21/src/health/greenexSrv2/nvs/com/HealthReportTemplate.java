@@ -183,7 +183,7 @@ public class HealthReportTemplate extends BatchJobTemplate implements Runnable {
 				disks.add(d);
 
 			}
-			String past_time = Utils.timeConvert(pastMinutes) + " назад";
+			String past_time = Utils.timeConvert(pastMinutes,gData.lang) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82");
 			PngDisksDiagramPainter dp = new PngDisksDiagramPainter();
 			dp.imgPath = gData.mainPath + File.separator + "img";
 			String fileGuid = dp.paintDisksDiagram(disks, past_time);

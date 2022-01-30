@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -172,43 +173,99 @@ public class Utils {
 
 			return out;
 		}
-		public static String timeConvert(int timeMinutes) { 
+		public static String timeConvert(int timeMinutes, String lang) { 
 			String out = "";
 			int days = timeMinutes/24/60;
 			int hours = timeMinutes/60%24;
 			int minutes = timeMinutes%60;
 			
+			HashMap<String, String> descr = getDescriptions();
+
+			if (lang.equals("EN") || lang.equals("RU") || lang.equals("DE")) {
+				// do nothing
+			} else {
+			  lang = "EN";
+			}
+
 			
 			
 			if (days > 0) {
 				
-				if (days==1) out+= days + " день ";
-				else if (days >= 2 && days <= 4) out+= days + " дня ";
-				else out+= days + " дней ";
+				if (days==1) out+= days + " " + descr.get("день" + lang) + " ";
+				else if (days >= 2 && days <= 4) out+= days + " " + descr.get("дня" + lang) + " ";
+				else out+= days + " " + descr.get("дней" + lang) + " ";
 			}
 			if (hours > 0) {
 
-				if (hours==1) out+= hours + " час ";
-				else if (hours >= 2 && hours <= 4 || hours >= 22 && hours <= 24 ) out+= hours + " часа ";
-				else out+= hours + " часов ";			
+				if (hours==1) out+= hours +  " " + descr.get("час" + lang);
+				else if (hours >= 2 && hours <= 4 || hours >= 22 && hours <= 24 ) out+= hours +  " " + descr.get("часа" + lang) + " ";
+				else out+= hours +  " " + descr.get("часов" + lang);			
 
 			}
 			if (minutes > 0) {
 
-				if (minutes==1) out+= minutes + " минута ";
+				if (minutes==1) out+= minutes + " " + descr.get("минута" + lang) + " ";
 				else if (minutes >= 2 && minutes <= 4 ||
 						minutes >= 22 && minutes <= 24 ||
 						minutes >= 32 && minutes <= 34 ||
 						minutes >= 42 && minutes <= 44 ||
 						minutes >= 52 && minutes <= 54 										
-						) out+= minutes + " минуты ";
-				else out+= minutes + " минут ";			
+						) out+= minutes + " " + descr.get("минуты" + lang) + " ";	
+				else out+= minutes + " " + descr.get("минут" + lang) + " ";			
 
-			}		
+			} if (minutes < 1) {
+				out += descr.get("менее 1 минуты" + lang);			
+			} 
+		
 		
 			return out;
 		}
-	
+	private static HashMap<String, String> getDescriptions(){
+		HashMap<String, String> out = new HashMap<>();
+		out.put("день" + "RU", "день");
+		out.put("день" + "EN", "day");
+		out.put("день" + "DE", "Tag");	
+
+		out.put("дня" + "RU", "дня");
+		out.put("дня" + "EN", "days");
+		out.put("дня" + "DE", "Tage");
+
+		out.put("дней" + "RU", "дней");
+		out.put("дней" + "EN", "days");
+		out.put("дней" + "DE", "Tage");
+
+		out.put("час" + "RU", "час");
+		out.put("час" + "EN", "hour");
+		out.put("час" + "DE", "Stunde");	
+
+		out.put("часа" + "RU", "часа");
+		out.put("часа" + "EN", "hours");
+		out.put("часа" + "DE", "Stunden");
+
+		out.put("часов" + "RU", "часов");
+		out.put("часов" + "EN", "hours");
+		out.put("часов" + "DE", "Stunden");
+
+
+		out.put("минута" + "RU", "минута");
+		out.put("минута" + "EN", "minute");
+		out.put("минута" + "DE", "Minute");	
+
+		out.put("минуты" + "RU", "минуты");
+		out.put("минуты" + "EN", "minutes");
+		out.put("минуты" + "DE", "Minuten");
+
+		out.put("минут" + "RU", "минут");
+		out.put("минут" + "EN", "minutes");
+		out.put("минут" + "DE", "Minuten");
+
+		out.put("менее 1 минуты" + "RU", "менее 1 минуты");
+		out.put("менее 1 минуты" + "EN", "less than 1 minute");
+		out.put("менее 1 минуты" + "DE", "weniger als 1 Minute");
+		
+		return out;
+	}
+		
 		public static String getTableStyle1() {
 			String out = "";
 

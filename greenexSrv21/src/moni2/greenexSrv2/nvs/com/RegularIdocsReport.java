@@ -74,7 +74,7 @@ public class RegularIdocsReport extends BatchJobTemplate implements Runnable {
 			out += " Проект:" + rec.get("project") + "<br>";
 			out += " SAP система:" + rec.get("sap_system") + "<br>";
 			int minutes = Integer.valueOf(rec.get("past_hours")) * 60;	
-			out += " интервал наблюдения " + Utils.timeConvert(minutes) + "<br>";
+			out += " интервал наблюдения " + Utils.timeConvert(minutes,gData.lang) + "<br>";
 			out += "с " + rec.get("check_date_old") + " по " + rec.get("check_date_new") + "<br>";
 
 			String link = "<a href='https://" + gData.getOwnIp() + ":" + gData.commonParams.get("webServicePort") ;
@@ -129,7 +129,7 @@ public class RegularIdocsReport extends BatchJobTemplate implements Runnable {
 		if (gData.commonParams.containsKey("mailSending")) {
 			if (gData.commonParams.get("mailSending").equals("true")) {
 
-				me.sendOneLetter(recepientsAll, subjectLetter, bodyLetter);
+				me.sendOneLetter(recepientsAll, subjectLetter, this.getClass().getSimpleName() + " " + bodyLetter);
 
 			} else {
 				gData.logger.info("MailNotificator is disallowed...");

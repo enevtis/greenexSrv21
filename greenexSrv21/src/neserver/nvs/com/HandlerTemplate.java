@@ -135,7 +135,10 @@ public class HandlerTemplate {
 		String out = "";
 
 		out += strPopupMenu();
-		out += "<p class='caption1'>&nbsp;&nbsp;" + gData.tr(text) + "</p><br>";
+		String txtCaption = gData.tr(text);
+		if (txtCaption.isEmpty()) txtCaption = text;		
+
+		out += "<p class='caption1'>&nbsp;&nbsp;" + txtCaption + "</p><br>";
 
 		return out;
 	}

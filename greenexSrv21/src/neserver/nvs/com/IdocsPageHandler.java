@@ -63,7 +63,7 @@ public class IdocsPageHandler extends HandlerTemplate {
 			out += " SAP система:" + pr.shortCaption + "<br>";
 			
 			int minutes = Integer.valueOf(rec.get("past_hours")) * 60;	
-			out += "<br> интервал наблюдения " + Utils.timeConvert(minutes) + "<br>";
+			out += "<br> интервал наблюдения " + Utils.timeConvert(minutes,gData.lang) + "<br>";
 			out += "с " + rec.get("check_date_old") + " по " + rec.get("check_date_new") + "<br><br>";
 		
 			

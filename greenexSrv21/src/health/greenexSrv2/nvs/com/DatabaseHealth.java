@@ -40,7 +40,7 @@ public class DatabaseHealth extends HealthTemplate{
 		
 		SQL += "SELECT a.*,b.short,b.db_type, b.sid, c.value_limit, ";
 		SQL += "TIMESTAMPDIFF(MINUTE,a.check_date, NOW()) AS 'past_minutes', "; 
-		SQL += "CASE WHEN result_number < c.value_limit THEN 'работает ок' ELSE 'есть ошибки' END AS 'work_status',  ";
+		SQL += "CASE WHEN result_number < c.value_limit THEN '" + gData.tr("81f15e97-f500-407a-b94d-3341659581c9") + "' ELSE '" + gData.tr("9ee99228-89a5-4828-95b2-d453310e3987") + "' END AS 'work_status',  ";
 		SQL += "CASE WHEN result_number < c.value_limit THEN 'black' ELSE 'red' END AS 'status_color'  ";
 		SQL += "FROM monitor_results a  ";
 		SQL += "LEFT JOIN db_systems b ON a.object_guid = b.guid ";
@@ -62,7 +62,7 @@ public class DatabaseHealth extends HealthTemplate{
 
 			int pastMinutesAfterBackup = (int)(Float.valueOf(rec.get("result_number")) * 60);
 
-			out += "" + Utils.timeConvert(pastMinutesAfterBackup) + " назад ";
+			out += "" + Utils.timeConvert(pastMinutesAfterBackup,gData.lang) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82");
 			
 			if (color.equals("red")){
 			 out += " " + gData.tr("b6542d16-9f82-47f2-a644-12feff1bb6c5") + " " + rec.get("value_limit") + " " + gData.tr("be46ab5f-8f47-46b2-ba5c-40ec682ee489") +".";			
@@ -70,7 +70,7 @@ public class DatabaseHealth extends HealthTemplate{
 			 out += " " + gData.tr("ad531450-79e4-4019-8a1c-9ca101e6964b") + " " + rec.get("value_limit") + " " + gData.tr("be46ab5f-8f47-46b2-ba5c-40ec682ee489") +".";				
 			}
 
-			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes"))) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82") + ")";
+			out += "(" + Utils.timeConvert(Integer.valueOf(rec.get("past_minutes")),gData.lang) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82") + ")";
 			out += "</p>";
 
 		}

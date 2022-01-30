@@ -304,7 +304,8 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 
 
 			timeString = "<p style='color:black;'>по состоянию на: " + timeString + "</p>";
-			timeString += "<p style='color:black;'>" + Utils.timeConvert(Integer.valueOf(pastMinutes)) + " минут назад.</p>";
+			timeString += "<p style='color:black;'>" + Utils.timeConvert(Integer.valueOf(pastMinutes),gData.lang) + 
+					gData.tr("545959c1-7dd4-4a1f-8c91-e5962818106d") + " " +  gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82") + ".</p>";
 	
 			body +=  timeString ;
 
@@ -328,7 +329,7 @@ public class AnalysisSm50WorkProcesses extends BatchJobTemplate implements Runna
 			if (gData.commonParams.containsKey("mailSending")) {
 				if (gData.commonParams.get("mailSending").equals("true")) {
 
-					me.sendOneLetter(recepientsAll, commonSubjectLetter, body);
+					me.sendOneLetter(recepientsAll, commonSubjectLetter, this.getClass().getSimpleName() + " " + body);
 
 				} else {
 					gData.logger.info("MailNotificator is disallowed...");

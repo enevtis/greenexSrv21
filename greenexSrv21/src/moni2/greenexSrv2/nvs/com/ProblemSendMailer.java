@@ -57,7 +57,7 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 	
 
 		String SQL = "";
-		SQL += "SELECT a.*,b.short,c.job_descr FROM problems a ";
+		SQL += "SELECT a.*,b.short,c.job_descr,c.job_descr_guid FROM problems a ";
 		SQL += "LEFT JOIN v_objects_all b ON a.object_guid = b.guid ";
 		SQL += "LEFT JOIN monitor_schedule c ON a.monitor_number = c.number ";
 		SQL += "WHERE is_mailed <> 'X' AND is_fixed <> 'X'";
@@ -94,9 +94,17 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 						bodyLetter += "</a> ";						
 
 						bodyLetter += rec.get("details") + " ";
-						bodyLetter += rec.get("job_descr") + " ";
-						bodyLetter += "превышение : " + rec.get("result_number") + " ";
-						bodyLetter += "лимит " + rec.get("value_limit") + " ";
+//						bodyLetter += rec.get("job_descr") + " ";
+
+
+						bodyLetter += gData.tr(rec.get("job_descr_guid")) + " ";
+						bodyLetter += gData.tr("df3298d7-c6ac-4d3b-bb71-0880538bdd55") + ": " + rec.get("result_number") + " ";
+						bodyLetter += gData.tr("51dea9da-58ba-4796-baa2-307763c167c8") + " " + rec.get("value_limit") + " ";
+
+						
+//						bodyLetter += "превышение : " + rec.get("result_number") + " ";
+//						bodyLetter += "лимит " + rec.get("value_limit") + " ";
+
 						bodyLetter += "<br> <i>" + rec.get("description") + "</i> ";
 						
 						String updSQL = "update `problems` set `is_mailed`= 'X',  mailed=NOW()";
@@ -120,7 +128,7 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 		
 		
 		String SQL = "";
-		SQL += "SELECT a.*,b.short,c.job_descr FROM problems a ";
+		SQL += "SELECT a.*,b.short,c.job_descr,c.job_descr_guid FROM problems a ";
 		SQL += "LEFT JOIN v_objects_all b ON a.object_guid = b.guid ";
 		SQL += "LEFT JOIN monitor_schedule c ON a.monitor_number = c.number ";
 		SQL += "WHERE is_mailed = 'X' AND is_fixed = 'X' AND is_recovery_mailing <> 'X'";	
@@ -155,9 +163,14 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 					bodyLetter += rec.get("short");
 					bodyLetter += "</a> ";						
 					bodyLetter += rec.get("details") + " ";
-					bodyLetter += rec.get("job_descr") + " ";
-					bodyLetter += "новое значение: " + rec.get("fixed_result") + " ";
-					bodyLetter += "лимит " + rec.get("fixed_limit") + " ";
+//					bodyLetter += rec.get("job_descr") + " ";
+					bodyLetter += gData.tr(rec.get("job_descr_guid")) + " ";
+					
+					bodyLetter += gData.tr("f35b8f86-ec8b-44a7-a197-e86181bb36d1") + ": " + rec.get("fixed_result") + " ";
+					
+//					bodyLetter += "новое значение: " + rec.get("fixed_result") + " ";
+
+					bodyLetter += gData.tr("51dea9da-58ba-4796-baa2-307763c167c8") + ": " + rec.get("fixed_limit") + " ";
 
 					String updSQL = "update `problems` set `is_last_mailing`='X',last_mailing=NOW(),";
 					updSQL += "is_recovery_mailing ='X',recovery_mailing=NOW() ";
@@ -192,14 +205,14 @@ public class ProblemSendMailer extends BatchJobTemplate implements Runnable {
 		
 		
 		
-		if (subjectLetter.length() > 125) subjectLetter = subjectLetter.substring(0,125) + " и другие ...";
+		if (subjectLetter.length() > 125) subjectLetter = subjectLetter.substring(0,125) + gData.tr("6a16e3b0-7d27-4d5d-8cbb-7c2c6b6a2b19") + " ...";
 		
 		gData.saveToLog("Письмо:" + recepientsAll + " " + subjectLetter + " " + bodyLetter, currJobName);
 
 		if (gData.commonParams.containsKey("mailSending")) {
 			if (gData.commonParams.get("mailSending").equals("true")) {
 
-				me.sendOneLetter2(recepients, subjectLetter, bodyLetter);
+				me.sendOneLetter2(recepients, subjectLetter, this.getClass().getSimpleName() + " " +bodyLetter);
 
 			} else {
 				gData.logger.info("MailNotificator is disallowed...");

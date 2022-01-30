@@ -65,7 +65,7 @@ public class RegularOpsbiHealthReport extends BatchJobTemplate implements Runnab
 			if (gData.commonParams.containsKey("mailSending")) {
 				if (gData.commonParams.get("mailSending").equals("true")) {
 
-					me.sendOneLetter(recepientsAll, subjectLetter, bodyLetter);
+					me.sendOneLetter(recepientsAll, subjectLetter, this.getClass().getSimpleName() + " " + bodyLetter);
 
 				} else {
 					gData.logger.info("MailNotificator is disallowed...");
@@ -181,12 +181,12 @@ public class RegularOpsbiHealthReport extends BatchJobTemplate implements Runnab
 				out += "</td>";	
 				
 				
-				String buffer = "занято " + rec.get("used_percent") + " %";
+				String buffer = gData.tr("1591c399-6dd7-4bac-91b8-cb38ce6d4b2a") + rec.get("used_percent") + " %";
 				buffer += "(" + rec.get("used_size_gb") + " из ";
 				buffer += rec.get("max_size_gb") + " Гб.) ";
 				int pastMinutes = Integer.valueOf(rec.get("past_minutes"));
 				
-				buffer += " Последняя проверка была: " + Utils.timeConvert(pastMinutes) + " назад";
+				buffer += gData.tr("84af12fb-090a-428d-8cf6-1331a5523151") + ": " + Utils.timeConvert(pastMinutes,gData.lang) + " " + gData.tr("d3ef97de-890b-4722-beb2-2811c225ae82");
 
 				out += "<td style='color:" + rec.get("color") + ";'>" + buffer + "</td>";
 				out += "</tr>";

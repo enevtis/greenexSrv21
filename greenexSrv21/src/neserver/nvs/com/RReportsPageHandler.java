@@ -107,7 +107,7 @@ public class RReportsPageHandler extends HandlerTemplate {
 			out += "<td>" + link + "</td>";
 			out += "<td>" + rec.get("caption") + "</td>";
 			out += "<td>" + rec.get("last_run_date") + "</td>";
-			out += "<td>" + Utils.timeConvert(Integer.valueOf(rec.get("interval_min"))) + "</td>";
+			out += "<td>" + Utils.timeConvert(Integer.valueOf(rec.get("interval_min")),gData.lang) + "</td>";
 			out += "</tr>";
 		}
 
