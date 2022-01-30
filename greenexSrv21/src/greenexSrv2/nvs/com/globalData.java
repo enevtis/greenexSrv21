@@ -136,6 +136,12 @@ public class globalData {
 		String out = "";
 
 		
+		if (!isStringGuid(guid)) {
+			
+			return guid;
+		}
+		
+		
 		String SQL = "select `text` from inttxt where guid='" + guid + "'";
 		SQL += " and lang='" + this.lang + "'";
 
@@ -146,9 +152,23 @@ public class globalData {
 		}
 
 		return out;
+		
 	}	
 	
-
+public boolean isStringGuid (String inputValue) {
+	boolean out = false;
+	
+	try{
+	    UUID uuid = UUID.fromString(inputValue);
+	    out = true;
+	} catch (IllegalArgumentException exception){
+	    out = false;
+	}
+	
+	return out;
+}
+	
+	
 	
 	public String getRandomUUID() {
 		String out = "";

@@ -44,8 +44,6 @@ public class TechParamsHandler extends HandlerTemplate {
 		}
 
 		
-		
-		
 		this.caption = gData.tr("Technical parameters for") + " " + pr.obj_typ + " " + pr.description
 				+ "<p class='prim'> (" + pr.physGuid + ")</p>";
 
